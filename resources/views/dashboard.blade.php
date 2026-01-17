@@ -38,7 +38,9 @@
                 </button>
 
                 {{-- 2. Botón Ejercicio --}}
-                <button class="flex items-center space-x-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition group">
+                <button
+                    x-on:click="$dispatch('open-modal', 'log-activity'); open = false"
+                    class="flex items-center space-x-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition group">
                     <span class="text-sm font-medium mr-2">Ejercicio</span>
                     <div class="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center text-orange-600 dark:text-orange-400 group-hover:scale-110 transition">
                         <i class="fa-solid fa-person-running"></i>
@@ -83,5 +85,8 @@
     </x-modal>
     <x-modal name="log-appointment" focusable>
         <livewire:dashboard.appointment-log />
+    </x-modal>
+    <x-modal name="log-activity" focusable>
+        <livewire:dashboard.activity-log />
     </x-modal>
 </x-app-layout>
