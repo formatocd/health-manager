@@ -28,7 +28,9 @@
                 style="display: none;"
             >
                 {{-- 1. Botón Cita Médica --}}
-                <button class="flex items-center space-x-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition group">
+                <button
+                    x-on:click="$dispatch('open-modal', 'log-appointment'); open = false"
+                    class="flex items-center space-x-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition group">
                     <span class="text-sm font-medium mr-2">Nueva Cita</span>
                     <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 group-hover:scale-110 transition">
                         <i class="fa-solid fa-user-doctor"></i>
@@ -78,5 +80,8 @@
     </x-modal>
     <x-modal name="log-heart" focusable>
         <livewire:dashboard.heart-log />
+    </x-modal>
+    <x-modal name="log-appointment" focusable>
+        <livewire:dashboard.appointment-log />
     </x-modal>
 </x-app-layout>
