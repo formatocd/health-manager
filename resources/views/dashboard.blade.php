@@ -44,7 +44,9 @@
                 </button>
 
                 {{-- 3. Botón Peso --}}
-                <button class="flex items-center space-x-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition group">
+                <button
+                    x-on:click="$dispatch('open-modal', 'log-weight'); open = false"
+                    class="flex items-center space-x-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition group">
                     <span class="text-sm font-medium mr-2">Registrar Peso</span>
                     <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition">
                         <i class="fa-solid fa-weight-scale"></i>
@@ -52,7 +54,9 @@
                 </button>
 
                 {{-- 4. Botón Corazón --}}
-                <button class="flex items-center space-x-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition group">
+                <button
+                    x-on:click="$dispatch('open-modal', 'log-heart'); open = false"
+                    class="flex items-center space-x-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition group">
                     <span class="text-sm font-medium mr-2">Presión Arterial</span>
                     <div class="w-8 h-8 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center text-red-600 dark:text-red-400 group-hover:scale-110 transition">
                         <i class="fa-solid fa-heart"></i>
@@ -69,4 +73,10 @@
             </button>
         </div>
     </div>
+    <x-modal name="log-weight" focusable>
+        <livewire:dashboard.weight-log />
+    </x-modal>
+    <x-modal name="log-heart" focusable>
+        <livewire:dashboard.heart-log />
+    </x-modal>
 </x-app-layout>
