@@ -8,6 +8,7 @@ use App\Models\MeasurementHeart;
 use App\Models\MeasurementWeight;
 use App\Models\ActivityExercise;
 use App\Models\MedicalAppointment;
+use Livewire\Attributes\On;
 
 class Calendar extends Component
 {
@@ -52,6 +53,12 @@ class Calendar extends Component
         ];
 
         $this->dispatch('open-modal', 'day-details');
+    }
+
+    #[On('refresh-calendar')]
+    public function refresh()
+    {
+
     }
 
     public function render()
