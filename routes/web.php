@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\AttachmentController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\ProfileController;
+use App\Livewire\History\HealthStats;
 use App\Livewire\History\HealthHistory;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -22,6 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ->name('attachment.show');
 
     Route::get('/history', HealthHistory::class)->name('history');
+    Route::get('/stats', HealthStats::class)->name('stats');
 });
 
 require __DIR__.'/auth.php';
