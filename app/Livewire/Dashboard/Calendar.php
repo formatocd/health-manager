@@ -48,18 +48,17 @@ class Calendar extends Component
         $this->dayDetails = [
             'hearts' => MeasurementHeart::where('user_id', $userId)->whereBetween('date', $range)->latest('date')->get(),
             'weights' => MeasurementWeight::where('user_id', $userId)->whereBetween('date', $range)->latest('date')->get(),
-            'exercises' => ActivityExercise::where('user_id', $userId)->whereBetween('date', $range)->latest('date')->get(),
-            'appointments' => MedicalAppointment::where('user_id', $userId)->whereBetween('date', $range)->latest('date')->get(),
+
+            // ✅ CAMBIO: Añadimos with('attachments')
+            'exercises' => ActivityExercise::with('attachments')->where('user_id', $userId)->whereBetween('date', $range)->latest('date')->get(),
+            'appointments' => MedicalAppointment::with('attachments')->where('user_id', $userId)->whereBetween('date', $range)->latest('date')->get(),
         ];
 
         $this->dispatch('open-modal', 'day-details');
     }
 
     #[On('refresh-calendar')]
-    public function refresh()
-    {
-
-    }
+    public function refresh(){}
 
     public function render()
     {

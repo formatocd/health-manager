@@ -53,7 +53,7 @@ class ActivityLog extends Component
 
         // 5. Guardar Archivos
         foreach ($this->files as $file) {
-            $path = $file->store('attachments/exercises', 'public'); // Carpeta distinta para organizar
+            $path = $file->store('attachments/exercises', 'local'); // Carpeta distinta para organizar
 
             $activity->attachments()->create([
                 'user_id' => auth()->id(),

@@ -52,7 +52,7 @@ class AppointmentLog extends Component
 
         // Guardamos los archivos de la lista acumulada
         foreach ($this->files as $file) {
-            $path = $file->store('attachments/appointments', 'public');
+            $path = $file->store('attachments/appointments', 'local');
 
             $appointment->attachments()->create([
                 'user_id' => auth()->id(),

@@ -1,27 +1,27 @@
 <div>
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
+    <div class="p-6 overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
 
         {{-- CABECERA --}}
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 capitalize">
+            <h2 class="text-2xl font-bold text-gray-800 capitalize dark:text-gray-100">
                 {{ $monthName }}
             </h2>
 
             <div class="flex space-x-2">
-                <button wire:click="prevMonth" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition text-gray-700 dark:text-gray-300">
+                <button wire:click="prevMonth" class="px-3 py-1 text-gray-700 transition bg-gray-100 rounded dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-300">
                     &lt;
                 </button>
-                <button wire:click="goToCurrentMonth" class="px-3 py-1 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition text-sm">
+                <button wire:click="goToCurrentMonth" class="px-3 py-1 text-sm text-white transition bg-indigo-500 rounded hover:bg-indigo-600">
                     Hoy
                 </button>
-                <button wire:click="nextMonth" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition text-gray-700 dark:text-gray-300">
+                <button wire:click="nextMonth" class="px-3 py-1 text-gray-700 transition bg-gray-100 rounded dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-300">
                     &gt;
                 </button>
             </div>
         </div>
 
         {{-- DÍAS SEMANA --}}
-        <div class="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+        <div class="grid grid-cols-7 gap-2 mb-2 text-xs font-bold tracking-wide text-center text-gray-500 uppercase dark:text-gray-400">
             <div>Lun</div>
             <div>Mar</div>
             <div>Mié</div>
@@ -48,7 +48,7 @@
                     </div>
 
                     {{-- ICONOS --}}
-                    <div class="flex flex-wrap gap-1 mt-1 content-end">
+                    <div class="flex flex-wrap content-end gap-1 mt-1">
                         @if($day['hasHeart'])
                             <i class="fa-solid fa-heart text-red-500 text-[10px]" title="Corazón"></i>
                         @endif
@@ -73,12 +73,12 @@
         <div class="p-6 bg-white dark:bg-gray-800">
 
             {{-- Cabecera --}}
-            <div class="flex justify-between items-center mb-4 pb-2 border-b dark:border-gray-700">
+            <div class="flex items-center justify-between pb-2 mb-4 border-b dark:border-gray-700">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                     Resumen del {{ $selectedDate ? \Carbon\Carbon::parse($selectedDate)->translatedFormat('d \d\e F') : '' }}
                 </h2>
                 {{-- Botón X --}}
-                <button x-on:click="$dispatch('close-modal', 'day-details')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition">
+                <button x-on:click="$dispatch('close-modal', 'day-details')" class="text-gray-400 transition hover:text-gray-600 dark:hover:text-gray-300">
                     <i class="fa-solid fa-xmark fa-lg"></i>
                 </button>
             </div>
@@ -87,18 +87,18 @@
             @if($selectedDate)
                 <div class="space-y-6">
                     @if(collect($dayDetails)->flatten()->isEmpty())
-                        <div class="text-center py-6 text-gray-500 dark:text-gray-400">
-                            <i class="fa-regular fa-calendar text-2xl mb-2 opacity-50"></i>
+                        <div class="py-6 text-center text-gray-500 dark:text-gray-400">
+                            <i class="mb-2 text-2xl opacity-50 fa-regular fa-calendar"></i>
                             <p>No hay registros para este día.</p>
                         </div>
                     @else
                         {{-- 1. Corazón --}}
                         @if($dayDetails['hearts']->isNotEmpty())
                             <div>
-                                <h3 class="text-sm font-bold text-red-500 uppercase mb-2 flex items-center gap-2">
+                                <h3 class="flex items-center gap-2 mb-2 text-sm font-bold text-red-500 uppercase">
                                     <i class="fa-solid fa-heart"></i> Corazón
                                 </h3>
-                                <div class="bg-red-50 dark:bg-red-900/20 rounded p-2 space-y-1">
+                                <div class="p-2 space-y-1 rounded bg-red-50 dark:bg-red-900/20">
                                     @foreach($dayDetails['hearts'] as $h)
                                         <div class="flex justify-between text-sm text-gray-700 dark:text-gray-300">
                                             <span>{{ $h->date->format('H:i') }}</span>
@@ -112,10 +112,10 @@
                         {{-- 2. Peso --}}
                         @if($dayDetails['weights']->isNotEmpty())
                             <div>
-                                <h3 class="text-sm font-bold text-blue-500 uppercase mb-2 flex items-center gap-2">
+                                <h3 class="flex items-center gap-2 mb-2 text-sm font-bold text-blue-500 uppercase">
                                     <i class="fa-solid fa-weight-scale"></i> Peso
                                 </h3>
-                                <div class="bg-blue-50 dark:bg-blue-900/20 rounded p-2 text-sm text-gray-700 dark:text-gray-300">
+                                <div class="p-2 text-sm text-gray-700 rounded bg-blue-50 dark:bg-blue-900/20 dark:text-gray-300">
                                     @foreach($dayDetails['weights'] as $w)
                                         <div class="flex justify-between">
                                             <span>{{ $w->date->format('H:i') }}</span>
@@ -129,16 +129,36 @@
                         {{-- 3. Ejercicio --}}
                         @if($dayDetails['exercises']->isNotEmpty())
                             <div>
-                                <h3 class="text-sm font-bold text-orange-500 uppercase mb-2 flex items-center gap-2">
+                                <h3 class="flex items-center gap-2 mb-2 text-sm font-bold text-orange-500 uppercase">
                                     <i class="fa-solid fa-person-running"></i> Ejercicio
                                 </h3>
-                                <div class="space-y-1">
+                                <div class="space-y-2">
                                     @foreach($dayDetails['exercises'] as $e)
-                                        <div class="bg-orange-50 dark:bg-orange-900/20 rounded p-2 text-sm text-gray-700 dark:text-gray-300">
-                                            <div class="flex justify-between font-semibold">
+                                        <div class="p-3 text-sm text-gray-700 rounded bg-orange-50 dark:bg-orange-900/20 dark:text-gray-300">
+                                            <div class="flex justify-between mb-1 font-semibold">
                                                 <span>{{ $e->title }}</span>
                                                 <span>{{ $e->duration_minutes }} min</span>
                                             </div>
+                                            @if($e->description)
+                                                <p class="mb-2 text-xs italic text-gray-500 dark:text-gray-400">{{ $e->description }}</p>
+                                            @endif
+
+                                            {{-- VISUALIZACIÓN DE ADJUNTOS --}}
+                                            @if($e->attachments->isNotEmpty())
+                                                <div class="flex flex-wrap gap-2 pt-2 mt-2 border-t border-orange-200 dark:border-orange-800/30">
+                                                    @foreach($e->attachments as $file)
+                                                        <a href="{{ route('attachment.show', $file->id) }}" target="_blank" class="flex items-center gap-1 px-2 py-1 text-xs transition bg-white border border-gray-200 rounded dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 group">
+                                                            @if(Str::startsWith($file->mime_type, 'image/'))
+                                                                <i class="text-orange-500 transition-transform fa-regular fa-image group-hover:scale-110"></i>
+                                                            @else
+                                                                <i class="text-red-500 transition-transform fa-regular fa-file-pdf group-hover:scale-110"></i>
+                                                            @endif
+                                                            <span class="truncate max-w-[100px]">{{ $file->file_name }}</span>
+                                                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-400"></i>
+                                                        </a>
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                         </div>
                                     @endforeach
                                 </div>
@@ -148,16 +168,36 @@
                         {{-- 4. Citas --}}
                         @if($dayDetails['appointments']->isNotEmpty())
                             <div>
-                                <h3 class="text-sm font-bold text-green-500 uppercase mb-2 flex items-center gap-2">
+                                <h3 class="flex items-center gap-2 mb-2 text-sm font-bold text-green-500 uppercase">
                                     <i class="fa-solid fa-user-doctor"></i> Citas
                                 </h3>
-                                <div class="space-y-1">
+                                <div class="space-y-2">
                                     @foreach($dayDetails['appointments'] as $a)
-                                        <div class="bg-green-50 dark:bg-green-900/20 rounded p-2 text-sm text-gray-700 dark:text-gray-300">
-                                            <div class="flex justify-between font-semibold">
+                                        <div class="p-3 text-sm text-gray-700 rounded bg-green-50 dark:bg-green-900/20 dark:text-gray-300">
+                                            <div class="flex justify-between mb-1 font-semibold">
                                                 <span>{{ $a->title }}</span>
                                                 <span>{{ $a->date->format('H:i') }}</span>
                                             </div>
+                                            @if($a->description)
+                                                <p class="mb-2 text-xs italic text-gray-500 dark:text-gray-400">{{ $a->description }}</p>
+                                            @endif
+
+                                            {{-- VISUALIZACIÓN DE ADJUNTOS --}}
+                                            @if($a->attachments->isNotEmpty())
+                                                <div class="flex flex-wrap gap-2 pt-2 mt-2 border-t border-green-200 dark:border-green-800/30">
+                                                    @foreach($a->attachments as $file)
+                                                        <a href="{{ route('attachment.show', $file->id) }}" target="_blank" class="flex items-center gap-1 px-2 py-1 text-xs transition bg-white border border-gray-200 rounded dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 group">
+                                                            @if(Str::startsWith($file->mime_type, 'image/'))
+                                                                <i class="text-green-600 transition-transform fa-regular fa-image group-hover:scale-110"></i>
+                                                            @else
+                                                                <i class="text-red-500 transition-transform fa-regular fa-file-pdf group-hover:scale-110"></i>
+                                                            @endif
+                                                            <span class="truncate max-w-[100px]">{{ $file->file_name }}</span>
+                                                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-400"></i>
+                                                        </a>
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                         </div>
                                     @endforeach
                                 </div>
@@ -168,8 +208,8 @@
             @endif
 
             {{-- Botón Cerrar --}}
-            <div class="mt-6 flex justify-end">
-                <button x-on:click="$dispatch('close-modal', 'day-details')" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 text-sm font-medium transition">
+            <div class="flex justify-end mt-6">
+                <button x-on:click="$dispatch('close-modal', 'day-details')" class="px-4 py-2 text-sm font-medium text-gray-800 transition bg-gray-200 rounded hover:bg-gray-300">
                     Cerrar
                 </button>
             </div>
