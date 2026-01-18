@@ -9,6 +9,37 @@
         <div class="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
             <div class="p-6 text-gray-900 dark:text-gray-100">
 
+                {{-- BARRA DE HERRAMIENTAS (BUSCADOR Y FILTRO) --}}
+                <div class="flex flex-col justify-between gap-4 mb-6 sm:flex-row">
+
+                    {{-- Buscador --}}
+                    <div class="relative w-full sm:w-1/2">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="text-gray-400 fa-solid fa-search"></i>
+                        </div>
+                        <input
+                            wire:model.live.debounce.300ms="search"
+                            type="text"
+                            class="block w-full pl-10 border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                            placeholder="Buscar citas, ejercicios..."
+                        >
+                    </div>
+
+                    {{-- Filtro por Tipo --}}
+                    <div class="w-full sm:w-1/4">
+                        <select
+                            wire:model.live="type"
+                            class="block w-full border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                        >
+                            <option value="">Todos los registros</option>
+                            <option value="appointment">🩺 Citas Médicas</option>
+                            <option value="exercise">🏃 Ejercicios</option>
+                            <option value="weight">⚖️ Peso</option>
+                            <option value="heart">❤️ Corazón</option>
+                        </select>
+                    </div>
+                </div>
+
                 @if($records->isEmpty())
                     <p class="py-10 text-center text-gray-500">No hay registros todavía.</p>
                 @else

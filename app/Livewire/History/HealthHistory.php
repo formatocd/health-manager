@@ -3,41 +3,69 @@
 namespace App\Livewire\History;
 
 use Livewire\Component;
-use Livewire\WithPagination; // Para que no salga una lista infinita
+use Livewire\WithPagination;
 use App\Models\MedicalAppointment;
 use App\Models\ActivityExercise;
 use App\Models\MeasurementWeight;
 use App\Models\MeasurementHeart;
+use Illuminate\Database\Eloquent\Builder;
 
 class HealthHistory extends Component
 {
     use WithPagination;
 
+    // Propiedades para los filtros
+    public $search = '';
+    public $type = ''; // '' = Todos, 'appointment', 'exercise', 'weight', 'heart'
+
     public function render()
     {
         $userId = auth()->id();
+        $records = collect();
 
-        // 1. Obtenemos las colecciones (Limitamos a últimos 50 de cada uno por ahora para no saturar)
-        // Nota: En el siguiente ticket (Filtros) haremos esto más elegante con uniones de SQL.
-        // Para la HM-21 básica, vamos a traerlos y mezclarlos en memoria (collection).
+        // 1. Lógica para CITAS (Si el filtro es 'Todos' o 'Cita')
+        if (empty($this->type) || $this->type === 'appointment') {
+            $query = MedicalAppointment::where('user_id', $userId);
 
-        $appointments = MedicalAppointment::where('user_id', $userId)->latest('date')->get();
-        $exercises = ActivityExercise::where('user_id', $userId)->latest('date')->get();
-        $weights = MeasurementWeight::where('user_id', $userId)->latest('date')->get();
-        $hearts = MeasurementHeart::where('user_id', $userId)->latest('date')->get();
+            // Si hay búsqueda, filtramos por título o descripción
+            if (!empty($this->search)) {
+                $query->where(function (Builder $q) {
+                    $q->where('title', 'like', '%' . $this->search . '%')
+                      ->orWhere('description', 'like', '%' . $this->search . '%');
+                });
+            }
+            $records = $records->concat($query->latest('date')->get());
+        }
 
-        // 2. Mezclamos todo en una sola colección y ordenamos
-        $allRecords = $appointments->concat($exercises)
-                                   ->concat($weights)
-                                   ->concat($hearts)
-                                   ->sortByDesc('date');
+        // 2. Lógica para EJERCICIOS
+        if (empty($this->type) || $this->type === 'exercise') {
+            $query = ActivityExercise::where('user_id', $userId);
 
-        // 3. Paginación manual (un truco para colecciones mezcladas)
-        // O para esta primera versión, mostramos una tabla simple sin paginar si no tienes miles de datos.
-        // Vamos a enviarlo todo a la vista primero.
+            if (!empty($this->search)) {
+                $query->where(function (Builder $q) {
+                    $q->where('title', 'like', '%' . $this->search . '%')
+                      ->orWhere('description', 'like', '%' . $this->search . '%');
+                });
+            }
+            $records = $records->concat($query->latest('date')->get());
+        }
+
+        // 3. Lógica para PESO (Solo tiene sentido buscar si filtramos por fecha, pero por ahora lo ocultamos si hay búsqueda de texto, o lo mostramos siempre)
+        // Decisión de diseño: Si buscas texto "Dentista", no quieres ver pesos.
+        if (empty($this->search) && (empty($this->type) || $this->type === 'weight')) {
+            $records = $records->concat(MeasurementWeight::where('user_id', $userId)->latest('date')->get());
+        }
+
+        // 4. Lógica para CORAZÓN
+        if (empty($this->search) && (empty($this->type) || $this->type === 'heart')) {
+            $records = $records->concat(MeasurementHeart::where('user_id', $userId)->latest('date')->get());
+        }
+
+        // Ordenamos el resultado final mezclado
+        $sortedRecords = $records->sortByDesc('date');
 
         return view('livewire.history.health-history', [
-            'records' => $allRecords
-        ])->layout('layouts.app'); // Asegúrate de usar tu layout principal
+            'records' => $sortedRecords
+        ])->layout('layouts.app');
     }
 }
