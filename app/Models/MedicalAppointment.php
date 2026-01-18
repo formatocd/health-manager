@@ -11,7 +11,13 @@ class MedicalAppointment extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'title',
+        'date',
+        'description',
+        'file_path',
+    ];
 
     protected $casts = [
         'date' => 'datetime',
