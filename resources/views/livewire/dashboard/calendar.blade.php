@@ -1,6 +1,92 @@
 <div>
     <div class="p-6 overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
 
+        {{-- WIDGETS DE RESUMEN (HM-27) --}}
+    <div class="grid grid-cols-1 gap-4 mb-8 md:grid-cols-3">
+
+        {{-- 1. Tarjeta: Próxima Cita --}}
+        <div class="p-4 overflow-hidden bg-white border-l-4 border-green-500 shadow-sm dark:bg-gray-800 sm:rounded-lg">
+            <div class="flex items-center">
+                <div class="p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:bg-green-900/20">
+                    <i class="text-xl fa-solid fa-user-doctor"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase dark:text-gray-400">Próxima Cita</p>
+                    @if($nextAppointment)
+                        <p class="w-40 text-lg font-bold text-gray-800 truncate dark:text-gray-100 sm:w-auto" title="{{ $nextAppointment->title }}">
+                            {{ $nextAppointment->title }}
+                        </p>
+                        <p class="text-xs text-gray-500">
+                            {{ $nextAppointment->date->format('d M, H:i') }}
+                            ({{ $nextAppointment->date->diffForHumans() }})
+                        </p>
+                    @else
+                        <p class="text-sm italic text-gray-400">No hay citas pendientes</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        {{-- 2. Tarjeta: Último Peso --}}
+        <div class="p-4 overflow-hidden bg-white border-l-4 border-blue-500 shadow-sm dark:bg-gray-800 sm:rounded-lg">
+            <div class="flex items-center">
+                <div class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:bg-blue-900/20">
+                    <i class="text-xl fa-solid fa-scale-balanced"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase dark:text-gray-400">Peso Actual</p>
+                    @if($latestWeight)
+                        <div class="flex items-end gap-2">
+                            <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                                {{ $latestWeight->weight }} <span class="text-sm font-normal">kg</span>
+                            </p>
+
+                            {{-- Indicador de tendencia (sube o baja) --}}
+                            @if($weightDiff > 0)
+                                <span class="mb-1 text-xs font-bold text-red-500">
+                                    <i class="fa-solid fa-arrow-up"></i> {{ number_format(abs($weightDiff), 1) }}
+                                </span>
+                            @elseif($weightDiff < 0)
+                                <span class="mb-1 text-xs font-bold text-green-500">
+                                    <i class="fa-solid fa-arrow-down"></i> {{ number_format(abs($weightDiff), 1) }}
+                                </span>
+                            @else
+                                <span class="mb-1 text-xs text-gray-400">
+                                    <i class="fa-solid fa-minus"></i> 0.0
+                                </span>
+                            @endif
+                        </div>
+                        <p class="text-xs text-gray-500">Registrado {{ $latestWeight->date->diffForHumans() }}</p>
+                    @else
+                        <p class="text-sm italic text-gray-400">Sin registros</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        {{-- 3. Tarjeta: Actividad Semanal --}}
+        <div class="p-4 overflow-hidden bg-white border-l-4 border-orange-500 shadow-sm dark:bg-gray-800 sm:rounded-lg">
+            <div class="flex items-center">
+                <div class="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:bg-orange-900/20">
+                    <i class="text-xl fa-solid fa-fire"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase dark:text-gray-400">Actividad (7 días)</p>
+                    <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                        {{ $weeklyMinutes }} <span class="text-sm font-normal">min</span>
+                    </p>
+                    <p class="text-xs text-gray-500">
+                        @if($weeklyMinutes >= 150)
+                            <span class="font-bold text-green-500">¡Objetivo cumplido! 🎉</span>
+                        @else
+                            Faltan {{ 150 - $weeklyMinutes }} min para 150
+                        @endif
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
         {{-- CABECERA --}}
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-2xl font-bold text-gray-800 capitalize dark:text-gray-100">

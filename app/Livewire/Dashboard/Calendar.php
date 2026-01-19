@@ -62,14 +62,41 @@ class Calendar extends Component
 
     public function render()
     {
+        $userId = auth()->id();
+
+        // --- 📊 CALCULADORA DE WIDGETS (NUEVO) ---
+
+        // 1. Widget: Próxima Cita
+        $nextAppointment = MedicalAppointment::where('user_id', $userId)
+            ->where('date', '>=', Carbon::now())
+            ->orderBy('date', 'asc')
+            ->first();
+
+        // 2. Widget: Peso (Actual y Tendencia)
+        $latestWeight = MeasurementWeight::where('user_id', $userId)->latest('date')->first();
+        $previousWeight = MeasurementWeight::where('user_id', $userId)->latest('date')->skip(1)->first();
+
+        $weightDiff = 0;
+        if ($latestWeight && $previousWeight) {
+            $weightDiff = $latestWeight->weight - $previousWeight->weight;
+        }
+
+        // 3. Widget: Actividad Semanal (Últimos 7 días)
+        $weeklyMinutes = ActivityExercise::where('user_id', $userId)
+            ->where('date', '>=', Carbon::now()->subDays(7))
+            ->sum('duration_minutes');
+
+        // --- FIN WIDGETS ---
+
+
+        // ... (Aquí sigue tu lógica existente del calendario: startOfMonth, queries de $hearts, $weights, etc.) ...
         $startOfMonth = $this->currentDate->copy()->startOfMonth();
         $endOfMonth = $this->currentDate->copy()->endOfMonth();
         $startOfCalendar = $startOfMonth->copy()->startOfWeek(Carbon::MONDAY);
         $endOfCalendar = $endOfMonth->copy()->endOfWeek(Carbon::SUNDAY);
-
-        $userId = auth()->id();
         $dateRange = [$startOfCalendar, $endOfCalendar];
 
+        // Consultas del calendario (MANTENER IGUAL QUE ANTES)
         $hearts = MeasurementHeart::where('user_id', $userId)->whereBetween('date', $dateRange)->get()->groupBy(fn($v) => $v->date->format('Y-m-d'));
         $weights = MeasurementWeight::where('user_id', $userId)->whereBetween('date', $dateRange)->get()->groupBy(fn($v) => $v->date->format('Y-m-d'));
         $exercises = ActivityExercise::where('user_id', $userId)->whereBetween('date', $dateRange)->get()->groupBy(fn($v) => $v->date->format('Y-m-d'));
@@ -95,6 +122,12 @@ class Calendar extends Component
         return view('livewire.dashboard.calendar', [
             'days' => $days,
             'monthName' => $this->currentDate->translatedFormat('F Y'),
+
+            // ✅ PASAMOS LOS DATOS DE LOS WIDGETS A LA VISTA
+            'nextAppointment' => $nextAppointment,
+            'latestWeight' => $latestWeight,
+            'weightDiff' => $weightDiff,
+            'weeklyMinutes' => $weeklyMinutes,
         ]);
     }
 }
