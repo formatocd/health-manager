@@ -4,30 +4,70 @@ namespace App\Livewire\History;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Storage; // IMPORTANTE: Para borrar archivos
+// Modelos
 use App\Models\MedicalAppointment;
 use App\Models\ActivityExercise;
 use App\Models\MeasurementWeight;
 use App\Models\MeasurementHeart;
-use Illuminate\Database\Eloquent\Builder;
 
 class HealthHistory extends Component
 {
     use WithPagination;
 
-    // Propiedades para los filtros
     public $search = '';
-    public $type = ''; // '' = Todos, 'appointment', 'exercise', 'weight', 'heart'
+    public $type = '';
+
+    // ✅ MÉTODO DE BORRADO UNIVERSAL
+    public function deleteRecord($id, $type)
+    {
+        // 1. Identificar qué modelo estamos intentando borrar
+        $modelClass = match($type) {
+            'MedicalAppointment' => MedicalAppointment::class,
+            'ActivityExercise' => ActivityExercise::class,
+            'MeasurementWeight' => MeasurementWeight::class,
+            'MeasurementHeart' => MeasurementHeart::class,
+            default => null,
+        };
+
+        if (!$modelClass) return;
+
+        // 2. Buscar el registro (y asegurar que pertenece al usuario logueado)
+        $record = $modelClass::where('id', $id)->where('user_id', auth()->id())->first();
+
+        if ($record) {
+            // 3. Limpieza de Adjuntos (Solo si el modelo tiene adjuntos)
+            // Comprobamos si existe la relación 'attachments' en este objeto
+            if (method_exists($record, 'attachments')) {
+                foreach ($record->attachments as $attachment) {
+                    // Borrar el archivo físico del disco 'local'
+                    if (Storage::disk('local')->exists($attachment->file_path)) {
+                        Storage::disk('local')->delete($attachment->file_path);
+                    }
+                    // Borrar el registro de la tabla attachments
+                    $attachment->delete();
+                }
+            }
+
+            // 4. Borrar el registro principal
+            $record->delete();
+
+            // 5. Mensaje de éxito (opcional, Livewire refrescará la tabla solo)
+            // session()->flash('message', 'Registro eliminado correctamente.');
+        }
+    }
 
     public function render()
     {
         $userId = auth()->id();
         $records = collect();
 
-        // 1. Lógica para CITAS (Si el filtro es 'Todos' o 'Cita')
+        // --- LÓGICA DE FILTRADO (Igual que tenías, la resumo aquí) ---
+
+        // Citas
         if (empty($this->type) || $this->type === 'appointment') {
             $query = MedicalAppointment::where('user_id', $userId);
-
-            // Si hay búsqueda, filtramos por título o descripción
             if (!empty($this->search)) {
                 $query->where(function (Builder $q) {
                     $q->where('title', 'like', '%' . $this->search . '%')
@@ -37,10 +77,9 @@ class HealthHistory extends Component
             $records = $records->concat($query->latest('date')->get());
         }
 
-        // 2. Lógica para EJERCICIOS
+        // Ejercicios
         if (empty($this->type) || $this->type === 'exercise') {
             $query = ActivityExercise::where('user_id', $userId);
-
             if (!empty($this->search)) {
                 $query->where(function (Builder $q) {
                     $q->where('title', 'like', '%' . $this->search . '%')
@@ -50,18 +89,17 @@ class HealthHistory extends Component
             $records = $records->concat($query->latest('date')->get());
         }
 
-        // 3. Lógica para PESO (Solo tiene sentido buscar si filtramos por fecha, pero por ahora lo ocultamos si hay búsqueda de texto, o lo mostramos siempre)
-        // Decisión de diseño: Si buscas texto "Dentista", no quieres ver pesos.
+        // Peso (Sin búsqueda de texto)
         if (empty($this->search) && (empty($this->type) || $this->type === 'weight')) {
             $records = $records->concat(MeasurementWeight::where('user_id', $userId)->latest('date')->get());
         }
 
-        // 4. Lógica para CORAZÓN
+        // Corazón (Sin búsqueda de texto)
         if (empty($this->search) && (empty($this->type) || $this->type === 'heart')) {
             $records = $records->concat(MeasurementHeart::where('user_id', $userId)->latest('date')->get());
         }
 
-        // Ordenamos el resultado final mezclado
+        // Ordenar
         $sortedRecords = $records->sortByDesc('date');
 
         return view('livewire.history.health-history', [

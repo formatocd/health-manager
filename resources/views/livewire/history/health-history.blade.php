@@ -57,6 +57,7 @@
                                     <th class="px-6 py-3">Fecha</th>
                                     <th class="px-6 py-3">Detalle Principal</th>
                                     <th class="px-6 py-3">Notas / Adjuntos</th>
+                                    <th class="px-6 py-3 text-right">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -116,6 +117,20 @@
                                                     <i class="fa-solid fa-paperclip"></i> {{ $record->attachments->count() }}
                                                 </span>
                                             @endif
+                                        </td>
+                                        {{-- NUEVA COLUMNA DE ACCIONES --}}
+                                        <td class="px-6 py-4 text-right whitespace-nowrap">
+
+                                            {{-- BOTÓN ELIMINAR --}}
+                                            <button
+                                                wire:click="deleteRecord({{ $record->id }}, '{{ class_basename($record) }}')"
+                                                wire:confirm="¿Estás seguro de borrar este registro? Si tiene archivos adjuntos, se eliminarán permanentemente."
+                                                class="p-2 text-red-500 transition rounded hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                title="Eliminar registro"
+                                            >
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+
                                         </td>
                                     </tr>
                                 @endforeach
