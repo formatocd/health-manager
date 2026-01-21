@@ -124,7 +124,7 @@
                                             {{-- BOTÓN EDITAR (Lógica condicional) --}}
                                             @if(class_basename($record) === 'MedicalAppointment')
                                                 <button
-                                                    wire:click="$dispatch('edit-appointment', { id: {{ $record->id }} })"
+                                                    wire:click="$dispatch('edit-activity-item', { id: {{ $record->id }} })"
                                                     class="mr-3 text-blue-500 transition hover:text-blue-700"
                                                     title="Editar Cita"
                                                 >
@@ -133,7 +133,7 @@
 
                                             @elseif(class_basename($record) === 'ActivityExercise')
                                                 <button
-                                                    wire:click="$dispatch('edit-appointment', { id: {{ $record->id }} })"
+                                                    wire:click="$dispatch('edit-activity-item', { id: {{ $record->id }} })"
                                                     class="mr-3 text-blue-500 transition hover:text-blue-700"
                                                     title="Editar Ejercicio"
                                                 >

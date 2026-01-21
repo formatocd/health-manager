@@ -13,22 +13,19 @@ class ActivityLog extends Component
 {
     use WithFileUploads;
 
-    // Identificador para Edición (Null = Crear)
     public $activityId = null;
-
-    // Campos del formulario
     public $title;
-    public $duration_minutes; // Campo exclusivo de Ejercicio
+    public $duration_minutes;
     public $date;
     public $description;
 
     // Gestión de Archivos
-    public $files = [];             // Nuevos archivos a subir
-    public $uploads = [];           // Temporal de Livewire
-    public $existingAttachments = []; // Archivos ya guardados en BD
+    public $files = [];
+    public $uploads = [];
+    public $existingAttachments = [];
 
-    // Listener para recibir la orden de editar desde el Historial
-    protected $listeners = ['edit-activity' => 'loadActivity'];
+    // Listener
+    protected $listeners = ['edit-activity-item' => 'editActivity'];
 
     public function mount()
     {
@@ -41,43 +38,46 @@ class ActivityLog extends Component
         $this->uploads = [];
     }
 
-    // --- CARGAR DATOS PARA EDITAR ---
-    public function loadActivity($id)
+    // --- CARGAR DATOS (VERSIÓN SEGURA) ---
+    public function editActivity($id)
     {
-        // Buscamos el ejercicio asegurando que sea del usuario
-        $activity = ActivityExercise::where('user_id', auth()->id())->findOrFail($id);
+        // Debug nuclear: Si esto sale en pantalla, hemos "conectado"
+        // dd('HE LLEGADO AL COMPONENTE. ID RECIBIDO: ' . $id);
 
+        $activity = ActivityExercise::find($id);
+
+        if (!$activity) {
+             return;
+        }
+
+        // Cargamos datos...
         $this->activityId = $activity->id;
         $this->title = $activity->title;
-        $this->duration_minutes = $activity->duration_minutes; // Cargamos la duración
+        $this->duration_minutes = $activity->duration_minutes;
         $this->description = $activity->description;
         $this->date = Carbon::parse($activity->date)->format('Y-m-d\TH:i');
-
-        // Cargar adjuntos antiguos
         $this->existingAttachments = $activity->attachments;
-
-        // Limpiar archivos nuevos anteriores
         $this->files = [];
 
-        // Abrir el modal
         $this->dispatch('open-modal', 'log-activity');
     }
 
-    // --- BORRAR ADJUNTO EXISTENTE ---
+    // --- BORRAR ADJUNTO ---
     public function deleteExistingAttachment($attachmentId)
     {
-        $attachment = Attachment::where('user_id', auth()->id())->findOrFail($attachmentId);
+        // Buscamos el adjunto de forma segura
+        $attachment = Attachment::where('user_id', auth()->id())->find($attachmentId);
 
-        // 1. Borrar físico
-        if (Storage::disk('local')->exists($attachment->file_path)) {
-            Storage::disk('local')->delete($attachment->file_path);
+        if ($attachment) {
+            // Borrar físico
+            if (Storage::disk('local')->exists($attachment->file_path)) {
+                Storage::disk('local')->delete($attachment->file_path);
+            }
+            // Borrar lógico
+            $attachment->delete();
+            // Refrescar lista
+            $this->existingAttachments = $this->existingAttachments->fresh();
         }
-
-        // 2. Borrar lógico
-        $attachment->delete();
-
-        // 3. Refrescar la lista visualmente
-        $this->existingAttachments = $this->existingAttachments->fresh();
     }
 
     public function removeNewFile($index)
@@ -96,16 +96,19 @@ class ActivityLog extends Component
         ]);
 
         if ($this->activityId) {
-            // --- ACTUALIZAR EJERCICIO ---
-            $activity = ActivityExercise::where('user_id', auth()->id())->findOrFail($this->activityId);
-            $activity->update([
-                'title' => $this->title,
-                'duration_minutes' => $this->duration_minutes,
-                'date' => $this->date,
-                'description' => $this->description,
-            ]);
+            // --- ACTUALIZAR ---
+            $activity = ActivityExercise::where('user_id', auth()->id())->find($this->activityId);
+
+            if ($activity) {
+                $activity->update([
+                    'title' => $this->title,
+                    'duration_minutes' => $this->duration_minutes,
+                    'date' => $this->date,
+                    'description' => $this->description,
+                ]);
+            }
         } else {
-            // --- CREAR EJERCICIO ---
+            // --- CREAR ---
             $activity = ActivityExercise::create([
                 'user_id' => auth()->id(),
                 'title' => $this->title,
@@ -115,16 +118,17 @@ class ActivityLog extends Component
             ]);
         }
 
-        // Guardar archivos NUEVOS
-        foreach ($this->files as $file) {
-            $path = $file->store('attachments/exercises', 'local'); // Nota la carpeta 'exercises'
-
-            $activity->attachments()->create([
-                'user_id' => auth()->id(),
-                'file_path' => $path,
-                'file_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getMimeType(),
-            ]);
+        // Si la actividad existe (se creó o actualizó), guardamos archivos
+        if (isset($activity) && $activity) {
+            foreach ($this->files as $file) {
+                $path = $file->store('attachments/exercises', 'local');
+                $activity->attachments()->create([
+                    'user_id' => auth()->id(),
+                    'file_path' => $path,
+                    'file_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType(),
+                ]);
+            }
         }
 
         // Reset total
