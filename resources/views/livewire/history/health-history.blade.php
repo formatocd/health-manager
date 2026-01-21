@@ -121,6 +121,26 @@
                                         {{-- NUEVA COLUMNA DE ACCIONES --}}
                                         <td class="px-6 py-4 text-right whitespace-nowrap">
 
+                                            {{-- BOTÓN EDITAR (Lógica condicional) --}}
+                                            @if(class_basename($record) === 'MedicalAppointment')
+                                                <button
+                                                    wire:click="$dispatch('edit-activity-item', { id: {{ $record->id }} })"
+                                                    class="mr-3 text-blue-500 transition hover:text-blue-700"
+                                                    title="Editar Cita"
+                                                >
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </button>
+
+                                            @elseif(class_basename($record) === 'ActivityExercise')
+                                                <button
+                                                    wire:click="$dispatch('edit-activity-item', { id: {{ $record->id }} })"
+                                                    class="mr-3 text-blue-500 transition hover:text-blue-700"
+                                                    title="Editar Ejercicio"
+                                                >
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </button>
+                                            @endif
+
                                             {{-- BOTÓN ELIMINAR --}}
                                             <button
                                                 wire:click="deleteRecord({{ $record->id }}, '{{ class_basename($record) }}')"
@@ -141,4 +161,12 @@
             </div>
         </div>
     </div>
+    <x-modal name="log-appointment" focusable>
+        <livewire:dashboard.appointment-log />
+    </x-modal>
+
+    {{-- Modal para Ejercicios --}}
+    <x-modal name="log-activity" focusable>
+        <livewire:dashboard.activity-log />
+    </x-modal>
 </div>
