@@ -1,6 +1,10 @@
 <div class="p-6">
     <h2 class="mb-4 text-lg font-medium text-gray-900 dark:text-gray-100">
-        🏥 Nueva Cita Médica
+        @if($appointmentId)
+            ✏️ Editar Cita Médica
+        @else
+            🩺 Nueva Cita Médica
+        @endif
     </h2>
 
     <form wire:submit="save">
@@ -110,6 +114,36 @@
             @endif
         </div>
 
+        {{-- ARCHIVOS EXISTENTES (SOLO EDICIÓN) --}}
+        @if($appointmentId && count($existingAttachments) > 0)
+            <div class="p-4 mb-4 bg-gray-100 border rounded-lg dark:bg-gray-800 dark:border-gray-700">
+                <h3 class="mb-2 text-xs font-bold text-gray-500 uppercase">Archivos Guardados:</h3>
+                <ul class="space-y-2">
+                    @foreach($existingAttachments as $att)
+                        <li class="flex items-center justify-between p-2 text-sm bg-white border rounded dark:bg-gray-900 dark:border-gray-700">
+                            <div class="flex items-center gap-2 truncate">
+                                @if(Str::startsWith($att->mime_type, 'image/'))
+                                    <i class="text-indigo-500 fa-regular fa-image"></i>
+                                @else
+                                    <i class="text-red-500 fa-regular fa-file-pdf"></i>
+                                @endif
+                                <span class="text-gray-700 dark:text-gray-300 truncate max-w-[200px]">{{ $att->file_name }}</span>
+                            </div>
+
+                            <button
+                                type="button"
+                                wire:click="deleteExistingAttachment({{ $att->id }})"
+                                wire:confirm="¿Estás seguro? El archivo se borrará permanentemente."
+                                class="px-2 py-1 text-xs font-bold text-red-500 hover:text-red-700"
+                            >
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         {{-- Botones --}}
         <div class="flex justify-end gap-2">
             <button
@@ -120,12 +154,13 @@
                 Cancelar
             </button>
 
-            <button
-                type="submit"
-                class="px-4 py-2 text-sm font-medium text-white transition bg-green-600 rounded-md hover:bg-green-700"
-            >
-                Guardar Cita
-            </button>
+            <x-primary-button class="ms-3">
+                @if($appointmentId)
+                    {{ __('Guardar Cambios') }}
+                @else
+                    {{ __('Crear Cita') }}
+                @endif
+            </x-primary-button>
         </div>
     </form>
 </div>

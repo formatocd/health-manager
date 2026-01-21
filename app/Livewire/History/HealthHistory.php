@@ -18,6 +18,7 @@ class HealthHistory extends Component
 
     public $search = '';
     public $type = '';
+    protected $listeners = ['refresh-history' => '$refresh'];
 
     // ✅ MÉTODO DE BORRADO UNIVERSAL
     public function deleteRecord($id, $type)
