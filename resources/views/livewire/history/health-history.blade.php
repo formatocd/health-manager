@@ -161,6 +161,12 @@
             </div>
         </div>
     </div>
-    <livewire:dashboard.appointment-log />
-    <livewire:dashboard.activity-log />
+    <x-modal name="log-appointment" focusable>
+        <livewire:dashboard.appointment-log />
+    </x-modal>
+
+    {{-- Modal para Ejercicios --}}
+    <x-modal name="log-activity" focusable>
+        <livewire:dashboard.activity-log />
+    </x-modal>
 </div>
