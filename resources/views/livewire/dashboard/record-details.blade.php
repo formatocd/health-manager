@@ -100,33 +100,53 @@
                     <i class="mr-2 text-indigo-500 fa-solid fa-paperclip"></i> Archivos Adjuntos ({{ $record->attachments->count() }})
                 </h3>
 
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     @foreach($record->attachments as $att)
-                        <div class="flex items-center p-3 transition border border-gray-200 rounded bg-gray-50 dark:bg-gray-700 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-gray-600 group">
-                            {{-- Icono --}}
-                            <div class="mr-3">
+                        <div class="relative flex items-center p-3 overflow-hidden transition border border-gray-200 rounded bg-gray-50 dark:bg-gray-700 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-gray-600 group">
+
+                            {{-- LÓGICA DE PREVISUALIZACIÓN --}}
+                            <div class="flex-shrink-0 mr-4">
                                 @if(Str::startsWith($att->mime_type, 'image/'))
-                                    <i class="text-xl text-indigo-500 fa-regular fa-image"></i>
+                                    {{-- SI ES IMAGEN: Usamos la ruta segura que acabamos de crear --}}
+                                    <div class="w-16 h-16 overflow-hidden border border-gray-200 rounded">
+                                        <img
+                                            src="{{ route('attachment.show', $att->id) }}"
+                                            alt="Adjunto"
+                                            class="object-cover w-full h-full transition-transform duration-300 cursor-pointer hover:scale-110"
+                                            onclick="window.open(this.src, '_blank')"
+                                            title="Click para ver en grande"
+                                        >
+                                    </div>
                                 @else
-                                    <i class="text-xl text-red-500 fa-regular fa-file-pdf"></i>
+                                    {{-- SI ES PDF U OTRO: Icono estándar --}}
+                                    <div class="flex items-center justify-center w-16 h-16 bg-white border border-gray-200 rounded dark:bg-gray-800 dark:border-gray-500">
+                                        <i class="text-3xl text-red-500 fa-regular fa-file-pdf"></i>
+                                    </div>
                                 @endif
                             </div>
 
-                            {{-- Nombre --}}
+                            {{-- DATOS DEL ARCHIVO --}}
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-200" title="{{ $att->file_name }}">
                                     {{ $att->file_name }}
                                 </p>
-                                <p class="text-xs text-gray-500">Click para descargar</p>
+                                <p class="mt-1 text-xs text-gray-500">
+                                    {{-- Convertir bytes a KB/MB para que quede bonito --}}
+                                    @if(Storage::disk('local')->exists($att->file_path))
+                                        {{ round(Storage::disk('local')->size($att->file_path) / 1024, 1) }} KB
+                                    @else
+                                        -
+                                    @endif
+                                </p>
                             </div>
 
-                            {{-- Botón Descarga --}}
+                            {{-- BOTÓN DESCARGA (Siempre disponible) --}}
                             <button
                                 wire:click="downloadFile({{ $att->id }})"
-                                class="ml-2 text-gray-400 transition group-hover:text-indigo-600 dark:group-hover:text-white"
-                                title="Descargar"
+                                class="p-2 ml-2 text-gray-400 transition bg-white border border-gray-100 rounded-full shadow-sm hover:text-indigo-600 dark:hover:text-white dark:bg-gray-800 dark:border-gray-600"
+                                title="Descargar archivo"
                             >
-                                <i class="text-lg fa-solid fa-cloud-arrow-down"></i>
+                                <i class="fa-solid fa-cloud-arrow-down"></i>
                             </button>
                         </div>
                     @endforeach
