@@ -71,16 +71,13 @@
                     <i class="text-xl fa-solid fa-fire"></i>
                 </div>
                 <div>
-                    <p class="text-xs font-bold text-gray-500 uppercase dark:text-gray-400">Actividad (7 días)</p>
+                    <p class="text-xs font-bold text-gray-500 uppercase dark:text-gray-400">Actividad</p>
+                    {{-- CAMBIO: Mostramos el contador de actividades --}}
                     <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                        {{ $weeklyMinutes }} <span class="text-sm font-normal">min</span>
+                        {{ $weeklyActivitiesCount }}
                     </p>
                     <p class="text-xs text-gray-500">
-                        @if($weeklyMinutes >= 150)
-                            <span class="font-bold text-green-500">¡Objetivo cumplido! 🎉</span>
-                        @else
-                            Faltan {{ 150 - $weeklyMinutes }} min para 150
-                        @endif
+                        actividades esta semana
                     </p>
                 </div>
             </div>
@@ -136,16 +133,16 @@
                     {{-- ICONOS --}}
                     <div class="flex flex-wrap content-end gap-1 mt-1">
                         @if($day['hasHeart'])
-                            <i class="fa-solid fa-heart text-red-500 text-[10px]" title="Corazón"></i>
+                            <i class="fa-solid fa-heart text-red-500 text-[24px]" title="Corazón"></i>
                         @endif
                         @if($day['hasWeight'])
-                            <i class="fa-solid fa-weight-scale text-blue-500 text-[10px]" title="Peso"></i>
+                            <i class="fa-solid fa-weight-scale text-blue-500 text-[24px]" title="Peso"></i>
                         @endif
                         @if($day['hasExercise'])
-                            <i class="fa-solid fa-person-running text-orange-500 text-[10px]" title="Ejercicio"></i>
+                            <i class="fa-solid fa-person-running text-orange-500 text-[24px]" title="Ejercicio"></i>
                         @endif
                         @if($day['hasAppointment'])
-                            <i class="fa-solid fa-user-doctor text-green-500 text-[10px]" title="Cita Médica"></i>
+                            <i class="fa-solid fa-user-doctor text-green-500 text-[24px]" title="Cita Médica"></i>
                         @endif
                     </div>
                 </div>
@@ -240,7 +237,7 @@
                                                                 <i class="text-red-500 transition-transform fa-regular fa-file-pdf group-hover:scale-110"></i>
                                                             @endif
                                                             <span class="truncate max-w-[100px]">{{ $file->file_name }}</span>
-                                                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-400"></i>
+                                                            <i class="fa-solid fa-arrow-up-right-from-square text-[24px] text-gray-400"></i>
                                                         </a>
                                                     @endforeach
                                                 </div>
@@ -279,7 +276,7 @@
                                                                 <i class="text-red-500 transition-transform fa-regular fa-file-pdf group-hover:scale-110"></i>
                                                             @endif
                                                             <span class="truncate max-w-[100px]">{{ $file->file_name }}</span>
-                                                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-400"></i>
+                                                            <i class="fa-solid fa-arrow-up-right-from-square text-[24px] text-gray-400"></i>
                                                         </a>
                                                     @endforeach
                                                 </div>
