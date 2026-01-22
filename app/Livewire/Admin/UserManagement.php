@@ -1,0 +1,64 @@
+<?php
+
+namespace App\Livewire\Admin;
+
+use Livewire\Component;
+use App\Models\User;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewUserCredentials;
+use Livewire\WithPagination;
+
+class UserManagement extends Component
+{
+    use WithPagination;
+
+    public $name;
+    public $email;
+
+    // Crear Usuario
+    public function createUser()
+    {
+        $this->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+        ]);
+
+        // 1. Generar contraseña aleatoria segura
+        $password = Str::password(10);
+
+        // 2. Crear usuario
+        $user = User::create([
+            'name' => $this->name,
+            'email' => $this->email,
+            'password' => Hash::make($password),
+            'role' => 'user', // Por defecto usuario normal
+        ]);
+
+        // 3. Enviar Email (Intenta enviarlo, si falla no rompe la app)
+        try {
+            Mail::to($user->email)->send(new NewUserCredentials($user->email, $password));
+            session()->flash('status', "Usuario creado y correo enviado a {$this->email}");
+        } catch (\Exception $e) {
+            session()->flash('error', "Usuario creado, pero falló el envío del correo. Contraseña: $password");
+        }
+
+        $this->reset(['name', 'email']);
+        $this->dispatch('close-modal', 'create-user');
+    }
+
+    public function deleteUser($id)
+    {
+        if ($id === auth()->id()) return; // No te borres a ti mismo
+
+        User::find($id)?->delete();
+    }
+
+    public function render()
+    {
+        return view('livewire.admin.user-management', [
+            'users' => User::paginate(10)
+        ])->layout('layouts.app');
+    }
+}
