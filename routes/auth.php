@@ -1,12 +1,13 @@
 <?php
 
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Middleware\EnsureRegistrationIsOpen;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::middleware('guest')->group(function () {
     Volt::route('register', 'pages.auth.register')
-        ->name('register');
+        ->name('register')->middleware(EnsureRegistrationIsOpen::class);
 
     Volt::route('login', 'pages.auth.login')
         ->name('login');

@@ -21,7 +21,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -44,5 +46,21 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (static::count() === 0) {
+                $user->role = 'admin';
+            }
+        });
     }
 }
