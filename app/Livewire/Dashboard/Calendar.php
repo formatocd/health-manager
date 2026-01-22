@@ -119,6 +119,10 @@ class Calendar extends Component
             $day->addDay();
         }
 
+        $weeklyActivitiesCount = \App\Models\ActivityExercise::where('user_id', auth()->id())
+            ->whereBetween('date', [now()->startOfWeek(), now()->endOfWeek()])
+            ->count();
+
         return view('livewire.dashboard.calendar', [
             'days' => $days,
             'monthName' => $this->currentDate->translatedFormat('F Y'),
@@ -128,6 +132,7 @@ class Calendar extends Component
             'latestWeight' => $latestWeight,
             'weightDiff' => $weightDiff,
             'weeklyMinutes' => $weeklyMinutes,
+            'weeklyActivitiesCount' => $weeklyActivitiesCount,
         ]);
     }
 }

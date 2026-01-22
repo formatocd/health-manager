@@ -71,16 +71,13 @@
                     <i class="text-xl fa-solid fa-fire"></i>
                 </div>
                 <div>
-                    <p class="text-xs font-bold text-gray-500 uppercase dark:text-gray-400">Actividad (7 días)</p>
+                    <p class="text-xs font-bold text-gray-500 uppercase dark:text-gray-400">Actividad</p>
+                    {{-- CAMBIO: Mostramos el contador de actividades --}}
                     <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">
-                        {{ $weeklyMinutes }} <span class="text-sm font-normal">min</span>
+                        {{ $weeklyActivitiesCount }}
                     </p>
                     <p class="text-xs text-gray-500">
-                        @if($weeklyMinutes >= 150)
-                            <span class="font-bold text-green-500">¡Objetivo cumplido! 🎉</span>
-                        @else
-                            Faltan {{ 150 - $weeklyMinutes }} min para 150
-                        @endif
+                        actividades esta semana
                     </p>
                 </div>
             </div>
