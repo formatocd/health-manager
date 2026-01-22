@@ -9,11 +9,11 @@
         <div class="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
             <div class="p-6 text-gray-900 dark:text-gray-100">
 
-                {{-- BARRA DE HERRAMIENTAS (BUSCADOR Y FILTRO) --}}
-                <div class="flex flex-col justify-between gap-4 mb-6 sm:flex-row">
+                {{-- BARRA DE HERRAMIENTAS --}}
+                <div class="flex flex-col items-end justify-between gap-4 mb-6 sm:flex-row sm:items-center">
 
                     {{-- Buscador --}}
-                    <div class="relative w-full sm:w-1/2">
+                    <div class="relative w-full sm:w-1/3">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <i class="text-gray-400 fa-solid fa-search"></i>
                         </div>
@@ -21,16 +21,13 @@
                             wire:model.live.debounce.300ms="search"
                             type="text"
                             class="block w-full pl-10 border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-                            placeholder="Buscar citas, ejercicios..."
+                            placeholder="Buscar..."
                         >
                     </div>
 
-                    {{-- Filtro por Tipo --}}
+                    {{-- Filtro Tipo --}}
                     <div class="w-full sm:w-1/4">
-                        <select
-                            wire:model.live="type"
-                            class="block w-full border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-                        >
+                        <select wire:model.live="type" class="block w-full border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="">Todos los registros</option>
                             <option value="appointment">🩺 Citas Médicas</option>
                             <option value="exercise">🏃 Ejercicios</option>
@@ -38,10 +35,22 @@
                             <option value="heart">❤️ Corazón</option>
                         </select>
                     </div>
-                    {{-- Botón Exportar PDF --}}
+
+                    {{-- Selector de Paginación --}}
                     <div class="w-full sm:w-auto">
-                        <a href="{{ route('export.history') }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 h-[42px]">
-                            <i class="mr-2 fa-solid fa-file-pdf"></i> Exportar PDF
+                        <select wire:model.live="perPage" class="block w-full border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500" title="Resultados por página">
+                            <option value="20">20 por pág.</option>
+                            <option value="40">40 por pág.</option>
+                            <option value="60">60 por pág.</option>
+                            <option value="80">80 por pág.</option>
+                            <option value="100">100 por pág.</option>
+                        </select>
+                    </div>
+
+                    {{-- PDF Export --}}
+                    <div class="w-full sm:w-auto">
+                        <a href="{{ route('export.history') }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white transition h-[42px]">
+                            <i class="mr-2 fa-solid fa-file-pdf"></i> PDF
                         </a>
                     </div>
                 </div>
@@ -62,9 +71,26 @@
                             </thead>
                             <tbody>
                                 @foreach($records as $record)
-                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    @php
+                                        // Definimos la variable $editEvent correctamente para usarla en el botón
+                                        $editEvent = match(class_basename($record)) {
+                                            'MedicalAppointment' => "edit-appointment",
+                                            'ActivityExercise' => "edit-activity-item",
+                                            'MeasurementWeight' => "edit-weight-item",
+                                            'MeasurementHeart' => "edit-heart-item",
+                                            default => null
+                                        };
+                                    @endphp
 
-                                        {{-- 1. COLUMNA TIPO --}}
+                                    <tr
+                                        wire:key="record-{{ $loop->index }}"
+                                        {{-- Clic en la fila abre el VISOR --}}
+                                        wire:click="$dispatch('view-record', { id: {{ $record->id }}, type: '{{ class_basename($record) }}' })"
+                                        class="transition-colors bg-white border-b cursor-pointer dark:bg-gray-800 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-700 group"
+                                        title="Haz clic para ver detalles y adjuntos"
+                                    >
+
+                                        {{-- 1. Tipo --}}
                                         <td class="px-6 py-4">
                                             @if(class_basename($record) === 'MedicalAppointment')
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -85,12 +111,12 @@
                                             @endif
                                         </td>
 
-                                        {{-- 2. COLUMNA FECHA --}}
+                                        {{-- 2. Fecha --}}
                                         <td class="px-6 py-4 font-medium">
                                             {{ $record->date->format('d/m/Y H:i') }}
                                         </td>
 
-                                        {{-- 3. COLUMNA DETALLE (Varía según modelo) --}}
+                                        {{-- 3. Detalle --}}
                                         <td class="px-6 py-4">
                                             @if(class_basename($record) === 'MedicalAppointment')
                                                 <span class="font-bold">{{ $record->title }}</span>
@@ -104,55 +130,28 @@
                                             @endif
                                         </td>
 
-                                        {{-- 4. COLUMNA NOTAS/ADJUNTOS --}}
+                                        {{-- 4. Notas/Adjuntos --}}
                                         <td class="max-w-xs px-6 py-4 text-gray-500 truncate">
-                                            {{-- Mostrar notas si existen --}}
                                             @if(!empty($record->description))
                                                 <span title="{{ $record->description }}">{{ Str::limit($record->description, 30) }}</span>
                                             @endif
-
-                                            {{-- Mostrar icono si tiene adjuntos (solo Citas y Ejercicios tienen la relación) --}}
                                             @if(method_exists($record, 'attachments') && $record->attachments->isNotEmpty())
-                                                <span class="ml-2 text-indigo-500" title="Tiene archivos adjuntos">
+                                                <span class="ml-2 text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded text-xs font-bold border border-indigo-200">
                                                     <i class="fa-solid fa-paperclip"></i> {{ $record->attachments->count() }}
                                                 </span>
                                             @endif
                                         </td>
-                                        {{-- NUEVA COLUMNA DE ACCIONES --}}
+
+                                        {{-- 5. Acciones --}}
                                         <td class="px-6 py-4 text-right whitespace-nowrap">
 
-                                            {{-- BOTÓN EDITAR (Lógica condicional) --}}
-                                            @if(class_basename($record) === 'MedicalAppointment')
+                                            {{-- BOTÓN EDITAR (Lápiz) --}}
+                                            @if($editEvent)
                                                 <button
-                                                    wire:click="$dispatch('edit-activity-item', { id: {{ $record->id }} })"
-                                                    class="mr-3 text-blue-500 transition hover:text-blue-700"
-                                                    title="Editar Cita"
-                                                >
-                                                    <i class="fa-solid fa-pen"></i>
-                                                </button>
-
-                                            @elseif(class_basename($record) === 'ActivityExercise')
-                                                <button
-                                                    wire:click="$dispatch('edit-activity-item', { id: {{ $record->id }} })"
-                                                    class="mr-3 text-blue-500 transition hover:text-blue-700"
-                                                    title="Editar Ejercicio"
-                                                >
-                                                    <i class="fa-solid fa-pen"></i>
-                                                </button>
-                                            @elseif(class_basename($record) === 'MeasurementWeight')
-                                                <button
-                                                    wire:click="$dispatch('edit-weight-item', { id: {{ $record->id }} })"
-                                                    class="mr-3 text-blue-500 transition hover:text-blue-700"
-                                                    title="Editar Peso"
-                                                >
-                                                    <i class="fa-solid fa-pen"></i>
-                                                </button>
-
-                                            @elseif(class_basename($record) === 'MeasurementHeart')
-                                                <button
-                                                    wire:click="$dispatch('edit-heart-item', { id: {{ $record->id }} })"
-                                                    class="mr-3 text-blue-500 transition hover:text-blue-700"
-                                                    title="Editar Corazón"
+                                                    {{-- .stop evita que se abra el visor al hacer click aquí --}}
+                                                    wire:click.stop="$dispatch('{{ $editEvent }}', { id: {{ $record->id }} })"
+                                                    class="mr-3 text-gray-400 transition hover:text-blue-600"
+                                                    title="Modificar registro"
                                                 >
                                                     <i class="fa-solid fa-pen"></i>
                                                 </button>
@@ -160,37 +159,35 @@
 
                                             {{-- BOTÓN ELIMINAR --}}
                                             <button
-                                                wire:click="deleteRecord({{ $record->id }}, '{{ class_basename($record) }}')"
-                                                wire:confirm="¿Estás seguro de borrar este registro? Si tiene archivos adjuntos, se eliminarán permanentemente."
-                                                class="p-2 text-red-500 transition rounded hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                wire:click.stop="deleteRecord({{ $record->id }}, '{{ class_basename($record) }}')"
+                                                wire:confirm="¿Borrar este registro permanentemente?"
+                                                class="text-gray-400 transition hover:text-red-600"
                                                 title="Eliminar registro"
                                             >
                                                 <i class="fa-solid fa-trash"></i>
                                             </button>
-
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
+
+                    {{-- Enlaces de Paginación --}}
+                    <div class="mt-4">
+                        {{ $records->links() }}
+                    </div>
+
                 @endif
             </div>
         </div>
     </div>
-    <x-modal name="log-appointment" focusable>
-        <livewire:dashboard.appointment-log />
-    </x-modal>
 
-    <x-modal name="log-activity" focusable>
-        <livewire:dashboard.activity-log />
-    </x-modal>
+    {{-- MODALES --}}
+    <x-modal name="log-appointment" focusable> <livewire:dashboard.appointment-log /> </x-modal>
+    <x-modal name="log-activity" focusable> <livewire:dashboard.activity-log /> </x-modal>
+    <x-modal name="log-weight" focusable> <livewire:dashboard.weight-log /> </x-modal>
+    <x-modal name="log-heart" focusable> <livewire:dashboard.heart-log /> </x-modal>
+    <x-modal name="record-details" focusable> <livewire:dashboard.record-details /> </x-modal>
 
-    <x-modal name="log-weight" focusable>
-        <livewire:dashboard.weight-log />
-    </x-modal>
-
-    <x-modal name="log-heart" focusable>
-        <livewire:dashboard.heart-log />
-    </x-modal>
 </div>
