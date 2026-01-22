@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\ProfileController;
 use App\Livewire\History\HealthStats;
 use App\Livewire\History\HealthHistory;
@@ -27,6 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/stats', HealthStats::class)->name('stats');
 
     Route::get('/export/history', [ExportController::class, 'downloadHistory'])->name('export.history');
+    Route::get('/attachment/{id}', [FileController::class, 'show'])->name('attachment.show');
 });
 
 require __DIR__.'/auth.php';

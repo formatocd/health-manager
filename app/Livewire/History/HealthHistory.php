@@ -4,9 +4,9 @@ namespace App\Livewire\History;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Pagination\LengthAwarePaginator; // Necesario para paginar colecciones
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Storage; // IMPORTANTE: Para borrar archivos
-// Modelos
+use Illuminate\Support\Facades\Storage;
 use App\Models\MedicalAppointment;
 use App\Models\ActivityExercise;
 use App\Models\MeasurementWeight;
@@ -18,12 +18,20 @@ class HealthHistory extends Component
 
     public $search = '';
     public $type = '';
+
+    // HM-35: Variable para controlar items por página
+    public $perPage = 20;
+
     protected $listeners = ['refresh-history' => '$refresh'];
 
-    // ✅ MÉTODO DE BORRADO UNIVERSAL
+    // Resetear a la página 1 si cambian los filtros
+    public function updatedSearch() { $this->resetPage(); }
+    public function updatedType() { $this->resetPage(); }
+    public function updatedPerPage() { $this->resetPage(); }
+
     public function deleteRecord($id, $type)
     {
-        // 1. Identificar qué modelo estamos intentando borrar
+        // ... (Mismo código de borrado que ya tenías, consérvalo) ...
         $modelClass = match($type) {
             'MedicalAppointment' => MedicalAppointment::class,
             'ActivityExercise' => ActivityExercise::class,
@@ -31,41 +39,28 @@ class HealthHistory extends Component
             'MeasurementHeart' => MeasurementHeart::class,
             default => null,
         };
-
         if (!$modelClass) return;
-
-        // 2. Buscar el registro (y asegurar que pertenece al usuario logueado)
         $record = $modelClass::where('id', $id)->where('user_id', auth()->id())->first();
 
         if ($record) {
-            // 3. Limpieza de Adjuntos (Solo si el modelo tiene adjuntos)
-            // Comprobamos si existe la relación 'attachments' en este objeto
             if (method_exists($record, 'attachments')) {
                 foreach ($record->attachments as $attachment) {
-                    // Borrar el archivo físico del disco 'local'
                     if (Storage::disk('local')->exists($attachment->file_path)) {
                         Storage::disk('local')->delete($attachment->file_path);
                     }
-                    // Borrar el registro de la tabla attachments
                     $attachment->delete();
                 }
             }
-
-            // 4. Borrar el registro principal
             $record->delete();
-
-            // 5. Mensaje de éxito (opcional, Livewire refrescará la tabla solo)
-            // session()->flash('message', 'Registro eliminado correctamente.');
         }
     }
 
     public function render()
     {
         $userId = auth()->id();
-        $records = collect();
+        $allRecords = collect();
 
-        // --- LÓGICA DE FILTRADO (Igual que tenías, la resumo aquí) ---
-
+        // 1. RECUPERAR TODOS LOS DATOS (Igual que antes)
         // Citas
         if (empty($this->type) || $this->type === 'appointment') {
             $query = MedicalAppointment::where('user_id', $userId);
@@ -75,7 +70,7 @@ class HealthHistory extends Component
                       ->orWhere('description', 'like', '%' . $this->search . '%');
                 });
             }
-            $records = $records->concat($query->latest('date')->get());
+            $allRecords = $allRecords->concat($query->latest('date')->get());
         }
 
         // Ejercicios
@@ -87,24 +82,37 @@ class HealthHistory extends Component
                       ->orWhere('description', 'like', '%' . $this->search . '%');
                 });
             }
-            $records = $records->concat($query->latest('date')->get());
+            $allRecords = $allRecords->concat($query->latest('date')->get());
         }
 
-        // Peso (Sin búsqueda de texto)
+        // Peso
         if (empty($this->search) && (empty($this->type) || $this->type === 'weight')) {
-            $records = $records->concat(MeasurementWeight::where('user_id', $userId)->latest('date')->get());
+            $allRecords = $allRecords->concat(MeasurementWeight::where('user_id', $userId)->latest('date')->get());
         }
 
-        // Corazón (Sin búsqueda de texto)
+        // Corazón
         if (empty($this->search) && (empty($this->type) || $this->type === 'heart')) {
-            $records = $records->concat(MeasurementHeart::where('user_id', $userId)->latest('date')->get());
+            $allRecords = $allRecords->concat(MeasurementHeart::where('user_id', $userId)->latest('date')->get());
         }
 
-        // Ordenar
-        $sortedRecords = $records->sortByDesc('date');
+        // 2. ORDENAR TODO
+        $sortedRecords = $allRecords->sortByDesc('date');
+
+        // 3. PAGINACIÓN MANUAL (HM-35)
+        // Extraemos solo los items que tocan en esta página
+        $items = $sortedRecords->forPage($this->getPage(), $this->perPage);
+
+        // Creamos el objeto paginador manualmente
+        $paginatedRecords = new LengthAwarePaginator(
+            $items,
+            $sortedRecords->count(), // Total real
+            $this->perPage,
+            $this->getPage(),
+            ['path' => request()->url(), 'query' => request()->query()] // Mantener la URL limpia
+        );
 
         return view('livewire.history.health-history', [
-            'records' => $sortedRecords
+            'records' => $paginatedRecords
         ])->layout('layouts.app');
     }
 }
