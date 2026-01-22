@@ -139,6 +139,23 @@
                                                 >
                                                     <i class="fa-solid fa-pen"></i>
                                                 </button>
+                                            @elseif(class_basename($record) === 'MeasurementWeight')
+                                                <button
+                                                    wire:click="$dispatch('edit-weight-item', { id: {{ $record->id }} })"
+                                                    class="mr-3 text-blue-500 transition hover:text-blue-700"
+                                                    title="Editar Peso"
+                                                >
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </button>
+
+                                            @elseif(class_basename($record) === 'MeasurementHeart')
+                                                <button
+                                                    wire:click="$dispatch('edit-heart-item', { id: {{ $record->id }} })"
+                                                    class="mr-3 text-blue-500 transition hover:text-blue-700"
+                                                    title="Editar Corazón"
+                                                >
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </button>
                                             @endif
 
                                             {{-- BOTÓN ELIMINAR --}}
@@ -165,8 +182,15 @@
         <livewire:dashboard.appointment-log />
     </x-modal>
 
-    {{-- Modal para Ejercicios --}}
     <x-modal name="log-activity" focusable>
         <livewire:dashboard.activity-log />
+    </x-modal>
+
+    <x-modal name="log-weight" focusable>
+        <livewire:dashboard.weight-log />
+    </x-modal>
+
+    <x-modal name="log-heart" focusable>
+        <livewire:dashboard.heart-log />
     </x-modal>
 </div>

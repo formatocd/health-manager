@@ -1,11 +1,15 @@
 <div class="p-6">
-    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-        ❤️ Registro de Salud Cardiaca
+    {{-- Título Dinámico --}}
+    <h2 class="mb-4 text-lg font-medium text-gray-900 dark:text-gray-100">
+        @if($heartId)
+            ✏️ Editar Datos del Corazón
+        @else
+            ❤️ Registrar Datos del Corazón
+        @endif
     </h2>
 
     <form wire:submit="save">
 
-        {{-- Fila: Presión Arterial --}}
         <div class="grid grid-cols-2 gap-4 mb-4">
             {{-- Sistólica --}}
             <div>
@@ -14,7 +18,7 @@
                     id="systolic"
                     wire:model="systolic"
                     type="number"
-                    class="mt-1 block w-full"
+                    class="block w-full mt-1"
                     placeholder="120"
                     autofocus
                 />
@@ -28,28 +32,23 @@
                     id="diastolic"
                     wire:model="diastolic"
                     type="number"
-                    class="mt-1 block w-full"
+                    class="block w-full mt-1"
                     placeholder="80"
                 />
                 <x-input-error :messages="$errors->get('diastolic')" class="mt-2" />
             </div>
         </div>
 
-        {{-- Fila: BPM --}}
+        {{-- Pulsaciones --}}
         <div class="mb-4">
             <x-input-label for="bpm" value="Pulsaciones (BPM)" />
-            <div class="relative">
-                <x-text-input
-                    id="bpm"
-                    wire:model="bpm"
-                    type="number"
-                    class="mt-1 block w-full pr-10"
-                    placeholder="70"
-                />
-                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
-                    <i class="fa-solid fa-heart-pulse"></i>
-                </div>
-            </div>
+            <x-text-input
+                id="bpm"
+                wire:model="bpm"
+                type="number"
+                class="block w-full mt-1"
+                placeholder="70"
+            />
             <x-input-error :messages="$errors->get('bpm')" class="mt-2" />
         </div>
 
@@ -60,7 +59,7 @@
                 id="date_heart"
                 wire:model="date"
                 type="datetime-local"
-                class="mt-1 block w-full"
+                class="block w-full mt-1"
             />
             <x-input-error :messages="$errors->get('date')" class="mt-2" />
         </div>
@@ -70,17 +69,14 @@
             <button
                 type="button"
                 x-on:click="$dispatch('close-modal', 'log-heart')"
-                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition text-sm"
+                class="px-4 py-2 text-sm text-gray-800 transition bg-gray-200 rounded-md hover:bg-gray-300"
             >
                 Cancelar
             </button>
 
-            <button
-                type="submit"
-                class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition text-sm font-medium"
-            >
-                Guardar
-            </button>
+            <x-primary-button>
+                @if($heartId) Guardar Cambios @else Registrar @endif
+            </x-primary-button>
         </div>
     </form>
 </div>
