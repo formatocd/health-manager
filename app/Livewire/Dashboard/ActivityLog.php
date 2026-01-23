@@ -42,7 +42,6 @@ class ActivityLog extends Component
     public function editActivity($id)
     {
         // Debug nuclear: Si esto sale en pantalla, hemos "conectado"
-        // dd('HE LLEGADO AL COMPONENTE. ID RECIBIDO: ' . $id);
 
         $activity = ActivityExercise::find($id);
 
