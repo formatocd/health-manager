@@ -49,8 +49,10 @@ new class extends Component
                 </div>
 
                 <x-dropdown align="right" width="48">
+                    {{-- 1. EL TRIGGER (El botón con tu nombre) --}}
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
+                            {{-- Mostramos el nombre del usuario --}}
                             <div x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
 
                             <div class="ms-1">
@@ -61,29 +63,34 @@ new class extends Component
                         </button>
                     </x-slot>
 
+                    {{-- 2. EL CONTENIDO (Las opciones del menú) --}}
                     <x-slot name="content">
+                        {{-- OPCIÓN 1: PERFIL --}}
                         <x-dropdown-link :href="route('profile')" wire:navigate>
-                            {{ __('Profile') }}
+                            <i class="mr-2 text-gray-400 fa-solid fa-user"></i> {{ __('Profile') }}
                         </x-dropdown-link>
 
-                        <!-- Authentication -->
+                        {{-- OPCIÓN 2: GESTIÓN DE USUARIOS (Solo Admin) --}}
+                        @if(auth()->user()->isAdmin())
+                            <div class="border-t border-gray-100 dark:border-gray-600"></div>
+
+                            <x-dropdown-link :href="route('admin.users')" wire:navigate>
+                                <i class="mr-2 text-indigo-500 fa-solid fa-users-gear"></i> {{ __('Gestión Usuarios') }}
+                            </x-dropdown-link>
+
+                            <div class="border-t border-gray-100 dark:border-gray-600"></div>
+                        @endif
+
+                        {{-- OPCIÓN 3: CERRAR SESIÓN --}}
+                        {{-- Usamos wire:click para llamar a la acción de logout que añadimos en auth.php --}}
                         <button wire:click="logout" class="w-full text-start">
                             <x-dropdown-link>
-                                {{ __('Log Out') }}
+                                <i class="mr-2 text-red-400 fa-solid fa-right-from-bracket"></i> {{ __('Log Out') }}
                             </x-dropdown-link>
                         </button>
                     </x-slot>
                 </x-dropdown>
             </div>
-
-            {{-- Solo para Admins --}}
-            @if(auth()->user()->isAdmin())
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('admin.users')" :active="request()->routeIs('admin.users')">
-                        {{ __('Usuarios') }}
-                    </x-nav-link>
-                </div>
-            @endif
 
             <!-- Hamburger -->
             <div class="flex items-center -me-2 sm:hidden">
@@ -116,6 +123,11 @@ new class extends Component
                 <x-responsive-nav-link :href="route('profile')" wire:navigate>
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
+                @if(auth()->user()->isAdmin())
+                    <x-responsive-nav-link :href="route('admin.users')">
+                        {{ __('Gestión Usuarios') }}
+                    </x-responsive-nav-link>
+                @endif
 
                 <!-- Authentication -->
                 <button wire:click="logout" class="w-full text-start">
