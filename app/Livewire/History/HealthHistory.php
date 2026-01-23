@@ -11,10 +11,12 @@ use App\Models\MedicalAppointment;
 use App\Models\ActivityExercise;
 use App\Models\MeasurementWeight;
 use App\Models\MeasurementHeart;
+use App\Traits\HasContext;
 
 class HealthHistory extends Component
 {
     use WithPagination;
+    use HasContext;
 
     public $search = '';
     public $type = '';
@@ -31,7 +33,10 @@ class HealthHistory extends Component
 
     public function deleteRecord($id, $type)
     {
-        // ... (Mismo código de borrado que ya tenías, consérvalo) ...
+        if($this->isReadOnly) {
+            return;
+        }
+
         $modelClass = match($type) {
             'MedicalAppointment' => MedicalAppointment::class,
             'ActivityExercise' => ActivityExercise::class,
@@ -57,7 +62,7 @@ class HealthHistory extends Component
 
     public function render()
     {
-        $userId = auth()->id();
+        $userId = $this->getTargetUserId();
         $allRecords = collect();
 
         // 1. RECUPERAR TODOS LOS DATOS (Igual que antes)

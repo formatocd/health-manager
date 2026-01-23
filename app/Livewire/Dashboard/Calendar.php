@@ -8,10 +8,13 @@ use App\Models\MeasurementHeart;
 use App\Models\MeasurementWeight;
 use App\Models\ActivityExercise;
 use App\Models\MedicalAppointment;
+use App\Traits\HasContext;
 use Livewire\Attributes\On;
 
 class Calendar extends Component
 {
+    use HasContext;
+
     public $currentDate;
     public $selectedDate = null;
     public $dayDetails = [];
@@ -39,7 +42,7 @@ class Calendar extends Component
     public function selectDay($dateString)
     {
         $this->selectedDate = Carbon::parse($dateString);
-        $userId = auth()->id();
+        $userId = $this->getTargetUserId();
 
         $startOfDay = $this->selectedDate->copy()->startOfDay();
         $endOfDay = $this->selectedDate->copy()->endOfDay();
@@ -62,7 +65,7 @@ class Calendar extends Component
 
     public function render()
     {
-        $userId = auth()->id();
+        $userId = $this->getTargetUserId();
 
         // --- 📊 CALCULADORA DE WIDGETS (NUEVO) ---
 
@@ -119,7 +122,7 @@ class Calendar extends Component
             $day->addDay();
         }
 
-        $weeklyActivitiesCount = \App\Models\ActivityExercise::where('user_id', auth()->id())
+        $weeklyActivitiesCount = \App\Models\ActivityExercise::where('user_id', $this->getTargetUserId())
             ->whereBetween('date', [now()->startOfWeek(), now()->endOfWeek()])
             ->count();
 

@@ -1,21 +1,23 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
             {{ __('Dashboard') }}
         </h2>
     </x-slot>
 
-    <div class="py-12 relative min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="relative min-h-screen py-12">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             {{-- Calendario --}}
             <livewire:dashboard.calendar />
         </div>
 
         {{-- HM-20: BOTÓN DE ACCIÓN FLOTANTE (FAB) --}}
         {{-- Usamos AlpineJS (x-data) para controlar el despliegue del menú --}}
-        <div x-data="{ open: false }" class="fixed bottom-8 right-8 flex flex-col items-end space-y-3 z-50">
+        <div x-data="{ open: false }" class="fixed z-50 flex flex-col items-end space-y-3 bottom-8 right-8">
 
-            {{-- MENÚ DE OPCIONES (Se despliega hacia arriba) --}}
+            @php
+                $isReadOnly = session('viewing_user_id') && session('viewing_user_id') != auth()->id();
+            @endphp
             <div
                 x-show="open"
                 x-transition:enter="transition ease-out duration-300"
@@ -24,15 +26,16 @@
                 x-transition:leave="transition ease-in duration-200"
                 x-transition:leave-start="opacity-100 translate-y-0"
                 x-transition:leave-end="opacity-0 translate-y-4"
-                class="flex flex-col space-y-3 items-end"
+                class="flex flex-col items-end space-y-3"
                 style="display: none;"
             >
+                @if(!$isReadOnly)
                 {{-- 1. Botón Cita Médica --}}
                 <button
                     x-on:click="$dispatch('open-modal', 'log-appointment'); open = false"
-                    class="flex items-center space-x-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition group">
-                    <span class="text-sm font-medium mr-2">Nueva Cita</span>
-                    <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 group-hover:scale-110 transition">
+                    class="flex items-center px-4 py-2 space-x-2 text-gray-700 transition bg-white rounded-full shadow-lg dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 group">
+                    <span class="mr-2 text-sm font-medium">Nueva Cita</span>
+                    <div class="flex items-center justify-center w-8 h-8 text-green-600 transition bg-green-100 rounded-full dark:bg-green-900 dark:text-green-400 group-hover:scale-110">
                         <i class="fa-solid fa-user-doctor"></i>
                     </div>
                 </button>
@@ -40,9 +43,9 @@
                 {{-- 2. Botón Ejercicio --}}
                 <button
                     x-on:click="$dispatch('open-modal', 'log-activity'); open = false"
-                    class="flex items-center space-x-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition group">
-                    <span class="text-sm font-medium mr-2">Ejercicio</span>
-                    <div class="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center text-orange-600 dark:text-orange-400 group-hover:scale-110 transition">
+                    class="flex items-center px-4 py-2 space-x-2 text-gray-700 transition bg-white rounded-full shadow-lg dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 group">
+                    <span class="mr-2 text-sm font-medium">Ejercicio</span>
+                    <div class="flex items-center justify-center w-8 h-8 text-orange-600 transition bg-orange-100 rounded-full dark:bg-orange-900 dark:text-orange-400 group-hover:scale-110">
                         <i class="fa-solid fa-person-running"></i>
                     </div>
                 </button>
@@ -50,9 +53,9 @@
                 {{-- 3. Botón Peso --}}
                 <button
                     x-on:click="$dispatch('open-modal', 'log-weight'); open = false"
-                    class="flex items-center space-x-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition group">
-                    <span class="text-sm font-medium mr-2">Registrar Peso</span>
-                    <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition">
+                    class="flex items-center px-4 py-2 space-x-2 text-gray-700 transition bg-white rounded-full shadow-lg dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 group">
+                    <span class="mr-2 text-sm font-medium">Registrar Peso</span>
+                    <div class="flex items-center justify-center w-8 h-8 text-blue-600 transition bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-400 group-hover:scale-110">
                         <i class="fa-solid fa-weight-scale"></i>
                     </div>
                 </button>
@@ -60,20 +63,29 @@
                 {{-- 4. Botón Corazón --}}
                 <button
                     x-on:click="$dispatch('open-modal', 'log-heart'); open = false"
-                    class="flex items-center space-x-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition group">
-                    <span class="text-sm font-medium mr-2">Presión Arterial</span>
-                    <div class="w-8 h-8 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center text-red-600 dark:text-red-400 group-hover:scale-110 transition">
+                    class="flex items-center px-4 py-2 space-x-2 text-gray-700 transition bg-white rounded-full shadow-lg dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 group">
+                    <span class="mr-2 text-sm font-medium">Presión Arterial</span>
+                    <div class="flex items-center justify-center w-8 h-8 text-red-600 transition bg-red-100 rounded-full dark:bg-red-900 dark:text-red-400 group-hover:scale-110">
                         <i class="fa-solid fa-heart"></i>
                     </div>
                 </button>
+                @else
+                    <div class="flex items-center gap-3 p-4 mb-8 text-blue-700 border border-blue-200 rounded-lg bg-blue-50 dark:bg-blue-900/20 dark:text-blue-200 dark:border-blue-800">
+                        <i class="text-xl fa-solid fa-eye"></i>
+                        <div>
+                            <p class="font-bold">Modo Espectador</p>
+                            <p class="text-sm">Estás viendo los datos de otro usuario. No puedes crear ni editar registros.</p>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             {{-- BOTÓN PRINCIPAL (+) --}}
             <button
                 @click="open = !open"
-                class="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-xl flex items-center justify-center transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                class="flex items-center justify-center text-white transition transform bg-indigo-600 rounded-full shadow-xl w-14 h-14 hover:bg-indigo-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-                <i class="fa-solid fa-plus text-xl transition-transform duration-300" :class="{'rotate-45': open}"></i>
+                <i class="text-xl transition-transform duration-300 fa-solid fa-plus" :class="{'rotate-45': open}"></i>
             </button>
         </div>
     </div>
