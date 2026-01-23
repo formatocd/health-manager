@@ -25,15 +25,23 @@ class UserManagement extends Component
             'email' => 'required|email|unique:users,email',
         ]);
 
-        // 1. Generar contraseña aleatoria segura
         $password = Str::password(10);
 
-        // 2. Crear usuario
+        // --- LÓGICA DE NICK AUTOMÁTICO ---
+        $baseNick = explode('@', $this->email)[0];
+        $nick = $baseNick;
+        $counter = 1;
+        while (User::where('username', $nick)->exists()) {
+            $nick = $baseNick . $counter++;
+        }
+        // --------------------------------
+
         $user = User::create([
             'name' => $this->name,
             'email' => $this->email,
+            'username' => $nick, // <--- Guardamos el Nick
             'password' => Hash::make($password),
-            'role' => 'user', // Por defecto usuario normal
+            'role' => 'user',
         ]);
 
         // 3. Enviar Email (Intenta enviarlo, si falla no rompe la app)

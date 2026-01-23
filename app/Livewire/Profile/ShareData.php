@@ -8,68 +8,56 @@ use Illuminate\Validation\ValidationException;
 
 class ShareData extends Component
 {
-    public $email = '';
+    public $username = ''; // CAMBIO: Usamos username en vez de email para el input
 
-    // Variables para el buscador predictivo
     public $search = '';
     public $searchResults = [];
 
-    // Se ejecuta automáticamente cuando escribes en el input wire:model.live="search"
     public function updatedSearch()
     {
-        // Si hay menos de 2 letras, limpiamos y no buscamos
         if (strlen($this->search) < 2) {
             $this->searchResults = [];
             return;
         }
 
-        // Buscamos usuarios que coincidan por nombre o email, excluyéndome a mí mismo
+        // BÚSQUEDA SEGURA: Solo por username (Nick)
+        // Opcional: permitir buscar por nombre real ('name') si quieres,
+        // pero NUNCA por email.
         $this->searchResults = User::where('id', '!=', auth()->id())
-            ->where(function($query) {
-                $query->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('email', 'like', '%' . $this->search . '%');
-            })
-            ->take(5) // Máximo 5 resultados
+            ->where('username', 'like', '%' . $this->search . '%')
+            ->take(5)
             ->get();
     }
 
-    // Al hacer clic en un resultado de la lista
-    public function selectUser($email)
+    public function selectUser($username)
     {
-        $this->email = $email;      // Rellenamos el campo email
-        $this->search = '';         // Limpiamos el texto del buscador
-        $this->searchResults = [];  // Ocultamos la lista
+        $this->username = $username;
+        $this->search = '';
+        $this->searchResults = [];
     }
 
     public function addViewer()
     {
-        // Validaciones con mensajes en español
         $this->validate([
-            'email' => 'required|email|exists:users,email'
+            'username' => 'required|exists:users,username'
         ], [
-            'email.required' => 'El campo de correo es obligatorio.',
-            'email.email' => 'Introduce un correo válido.',
-            'email.exists' => 'No encontramos ningún usuario con ese correo.',
+            'username.exists' => 'No encontramos ningún usuario con ese Nick.',
         ]);
 
-        $viewer = User::where('email', $this->email)->first();
+        $viewer = User::where('username', $this->username)->first();
 
-        // Evitar compartir con uno mismo
         if ($viewer->id === auth()->id()) {
-            throw ValidationException::withMessages(['email' => 'No puedes compartirte datos a ti mismo.']);
+            throw ValidationException::withMessages(['username' => 'No puedes compartirte datos a ti mismo.']);
         }
 
-        // Evitar duplicados
         if (auth()->user()->allowedViewers()->where('viewer_id', $viewer->id)->exists()) {
-            throw ValidationException::withMessages(['email' => 'Este usuario ya tiene acceso a tus datos.']);
+            throw ValidationException::withMessages(['username' => 'Este usuario ya tiene acceso a tus datos.']);
         }
 
-        // Guardar permiso
         auth()->user()->allowedViewers()->attach($viewer->id);
 
-        // Limpiar formulario y avisar
-        $this->email = '';
-        session()->flash('status', "Acceso concedido a {$viewer->name}.");
+        $this->username = '';
+        session()->flash('status', "Acceso concedido a @{$viewer->username}.");
     }
 
     public function removeViewer($id)
