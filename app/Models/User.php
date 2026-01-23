@@ -20,6 +20,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'username',
         'password',
         'role',
     ];
@@ -62,5 +63,32 @@ class User extends Authenticatable
                 $user->role = 'admin';
             }
         });
+    }
+
+    // ...
+
+    // 1. Personas a las que YO he dado permiso (Mis espectadores)
+    // Relación: Yo soy el owner_id
+    public function allowedViewers()
+    {
+        return $this->belongsToMany(User::class, 'user_permissions', 'owner_id', 'viewer_id');
+    }
+
+    // 2. Personas que me han dado permiso a MÍ (A quién puedo ver)
+    // Relación: Yo soy el viewer_id
+    public function accessibleUsers()
+    {
+        return $this->belongsToMany(User::class, 'user_permissions', 'viewer_id', 'owner_id');
+    }
+
+    // 3. Helper de Seguridad Rápida
+    // Verifica si tengo derecho a ver al usuario $targetUserId
+    public function canView($targetUserId)
+    {
+        // Puedo ver si:
+        // A) Soy yo mismo
+        // B) Ese usuario me ha incluido en su lista de espectadores
+        return $this->id === $targetUserId ||
+               $this->accessibleUsers()->where('owner_id', $targetUserId)->exists();
     }
 }
