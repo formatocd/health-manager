@@ -13,9 +13,6 @@ class FileController extends Controller
         $attachment = Attachment::findOrFail($id);
         $currentUser = auth()->user();
 
-        // REGLA DE SEGURIDAD ACTUALIZADA:
-        // 1. Es mío?
-        // 2. O... ¿El dueño del archivo me ha dado permiso para verlo?
         if ($attachment->user_id !== $currentUser->id && !$currentUser->canView($attachment->user_id)) {
             abort(403, 'No tienes permiso para ver este archivo.');
         }

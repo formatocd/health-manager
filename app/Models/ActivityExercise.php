@@ -29,7 +29,6 @@ class ActivityExercise extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Relación polimórfica: Una actividad puede tener muchos adjuntos
     public function attachments(): MorphMany
     {
         return $this->morphMany(Attachment::class, 'model');

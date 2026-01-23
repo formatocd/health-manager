@@ -9,7 +9,7 @@ use Livewire\Volt\Component;
 new class extends Component
 {
     public string $name = '';
-    public string $username = ''; // <--- 1. NUEVA VARIABLE
+    public string $username = '';
     public string $email = '';
 
     /**
@@ -20,7 +20,7 @@ new class extends Component
         $user = Auth::user();
 
         $this->name = $user->name;
-        $this->username = $user->username ?? ''; // <--- 2. CARGAR DATO (con fallback por si acaso)
+        $this->username = $user->username ?? '';
         $this->email = $user->email;
     }
 
@@ -33,13 +33,12 @@ new class extends Component
 
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
-            // 3. REGLA DE VALIDACIÓN PARA USERNAME
             'username' => [
                 'required',
                 'string',
                 'max:255',
-                'alpha_dash', // Solo letras, números y guiones
-                Rule::unique(User::class)->ignore($user->id) // Único, ignorándome a mí
+                'alpha_dash',
+                Rule::unique(User::class)->ignore($user->id)
             ],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
         ]);

@@ -7,13 +7,12 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use App\Models\MedicalAppointment; // Importar modelo
+use App\Models\MedicalAppointment;
 
 class AppointmentReminder extends Mailable
 {
     use Queueable, SerializesModels;
 
-    // Variable pública para usar en la vista
     public $appointment;
 
     public function __construct(MedicalAppointment $appointment)

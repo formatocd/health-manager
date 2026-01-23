@@ -10,10 +10,10 @@ class MeasurementHeart extends Model
 {
     use HasFactory;
 
-    protected $guarded = []; // Permite asignación masiva (útil para el MVP)
+    protected $guarded = [];
 
     protected $casts = [
-        'date' => 'datetime', // Laravel convertirá esto a objeto Carbon automáticamente
+        'date' => 'datetime',
     ];
 
     public function user(): BelongsTo

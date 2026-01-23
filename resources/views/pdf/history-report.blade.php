@@ -14,10 +14,10 @@
         td { border-bottom: 1px solid #e2e8f0; padding: 8px; vertical-align: top; }
 
         .badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; color: white; display: inline-block; }
-        .bg-cita { background-color: #48bb78; }    /* Verde */
-        .bg-ejercicio { background-color: #ed8936; } /* Naranja */
-        .bg-peso { background-color: #4299e1; }      /* Azul */
-        .bg-corazon { background-color: #f56565; }   /* Rojo */
+        .bg-cita { background-color: #48bb78; }
+        .bg-ejercicio { background-color: #ed8936; }
+        .bg-peso { background-color: #4299e1; }
+        .bg-corazon { background-color: #f56565; }
     </style>
 </head>
 <body>

@@ -10,7 +10,6 @@ use Carbon\Carbon;
 
 class SendAppointmentReminders extends Command
 {
-    // Nombre del comando para ejecutarlo en terminal
     protected $signature = 'app:send-appointment-reminders';
     protected $description = 'Envía correos de recordatorio para citas de mañana';
 
@@ -18,12 +17,10 @@ class SendAppointmentReminders extends Command
     {
         $this->info('🔍 Buscando citas para mañana...');
 
-        // Calcular fecha de mañana
         $tomorrow = Carbon::tomorrow();
 
-        // Buscar citas que coincidan con la fecha (sin importar la hora)
         $appointments = MedicalAppointment::whereDate('date', $tomorrow)
-                                          ->with('user') // Cargar usuario para tener su email
+                                          ->with('user')
                                           ->get();
 
         if ($appointments->isEmpty()) {
@@ -33,7 +30,6 @@ class SendAppointmentReminders extends Command
 
         $count = 0;
         foreach ($appointments as $appointment) {
-            // Enviar email al usuario dueño de la cita
             Mail::to($appointment->user->email)->send(new AppointmentReminder($appointment));
 
             $this->info("📨 Enviado recordatorio a: {$appointment->user->email} para la cita: {$appointment->title}");
