@@ -144,28 +144,31 @@
 
                                         {{-- 5. Acciones --}}
                                         <td class="px-6 py-4 text-right whitespace-nowrap">
+                                            @if(!$this->isReadOnly)
+                                                {{-- BOTÓN EDITAR (Lápiz) --}}
+                                                @if($editEvent)
+                                                    <button
+                                                        {{-- .stop evita que se abra el visor al hacer click aquí --}}
+                                                        wire:click.stop="$dispatch('{{ $editEvent }}', { id: {{ $record->id }} })"
+                                                        class="mr-3 text-gray-400 transition hover:text-blue-600"
+                                                        title="Modificar registro"
+                                                    >
+                                                        <i class="fa-solid fa-pen"></i>
+                                                    </button>
+                                                @endif
 
-                                            {{-- BOTÓN EDITAR (Lápiz) --}}
-                                            @if($editEvent)
+                                                {{-- BOTÓN ELIMINAR --}}
                                                 <button
-                                                    {{-- .stop evita que se abra el visor al hacer click aquí --}}
-                                                    wire:click.stop="$dispatch('{{ $editEvent }}', { id: {{ $record->id }} })"
-                                                    class="mr-3 text-gray-400 transition hover:text-blue-600"
-                                                    title="Modificar registro"
+                                                    wire:click.stop="deleteRecord({{ $record->id }}, '{{ class_basename($record) }}')"
+                                                    wire:confirm="¿Borrar este registro permanentemente?"
+                                                    class="text-gray-400 transition hover:text-red-600"
+                                                    title="Eliminar registro"
                                                 >
-                                                    <i class="fa-solid fa-pen"></i>
+                                                    <i class="fa-solid fa-trash"></i>
                                                 </button>
+                                            @else
+                                                <span class="text-xs italic text-gray-400">Solo lectura</span>
                                             @endif
-
-                                            {{-- BOTÓN ELIMINAR --}}
-                                            <button
-                                                wire:click.stop="deleteRecord({{ $record->id }}, '{{ class_basename($record) }}')"
-                                                wire:confirm="¿Borrar este registro permanentemente?"
-                                                class="text-gray-400 transition hover:text-red-600"
-                                                title="Eliminar registro"
-                                            >
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach
