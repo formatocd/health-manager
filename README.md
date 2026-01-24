@@ -34,7 +34,7 @@ Estas operaciones se realizan directamente conectado a la consola de tu servidor
 
 1.  **Clonar el repositorio:**
     ```bash
-    git clone [https://github.com/tu-usuario/health-manager.git](https://github.com/tu-usuario/health-manager.git)
+    git clone [https://github.com/formatocd/health-manager.git](https://github.com/formatocd/health-manager.git)
     cd health-manager
     ```
 
@@ -56,7 +56,7 @@ Estas operaciones se realizan en tu ordenador personal antes de subir los archiv
 
 1.  **Clonar el repositorio en tu equipo:**
     ```bash
-    git clone [https://github.com/tu-usuario/health-manager.git](https://github.com/tu-usuario/health-manager.git)
+    git clone [https://github.com/formatocd/health-manager.git](https://github.com/formatocd/health-manager.git)
     cd health-manager
     ```
 
