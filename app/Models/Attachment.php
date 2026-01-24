@@ -17,13 +17,11 @@ class Attachment extends Model
         'model_type'
     ];
 
-    // Relación inversa polimórfica (para saber si es de una Cita o un Ejercicio)
     public function model(): MorphTo
     {
         return $this->morphTo();
     }
 
-    // Relación con el usuario
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -19,12 +19,10 @@ class ActivityLog extends Component
     public $date;
     public $description;
 
-    // Gestión de Archivos
     public $files = [];
     public $uploads = [];
     public $existingAttachments = [];
 
-    // Listener
     protected $listeners = ['edit-activity-item' => 'editActivity'];
 
     public function mount()
@@ -38,18 +36,14 @@ class ActivityLog extends Component
         $this->uploads = [];
     }
 
-    // --- CARGAR DATOS (VERSIÓN SEGURA) ---
     public function editActivity($id)
     {
-        // Debug nuclear: Si esto sale en pantalla, hemos "conectado"
-
         $activity = ActivityExercise::find($id);
 
         if (!$activity) {
              return;
         }
 
-        // Cargamos datos...
         $this->activityId = $activity->id;
         $this->title = $activity->title;
         $this->duration_minutes = $activity->duration_minutes;
@@ -61,20 +55,15 @@ class ActivityLog extends Component
         $this->dispatch('open-modal', 'log-activity');
     }
 
-    // --- BORRAR ADJUNTO ---
     public function deleteExistingAttachment($attachmentId)
     {
-        // Buscamos el adjunto de forma segura
         $attachment = Attachment::where('user_id', auth()->id())->find($attachmentId);
 
         if ($attachment) {
-            // Borrar físico
             if (Storage::disk('local')->exists($attachment->file_path)) {
                 Storage::disk('local')->delete($attachment->file_path);
             }
-            // Borrar lógico
             $attachment->delete();
-            // Refrescar lista
             $this->existingAttachments = $this->existingAttachments->fresh();
         }
     }
@@ -95,7 +84,6 @@ class ActivityLog extends Component
         ]);
 
         if ($this->activityId) {
-            // --- ACTUALIZAR ---
             $activity = ActivityExercise::where('user_id', auth()->id())->find($this->activityId);
 
             if ($activity) {
@@ -107,7 +95,6 @@ class ActivityLog extends Component
                 ]);
             }
         } else {
-            // --- CREAR ---
             $activity = ActivityExercise::create([
                 'user_id' => auth()->id(),
                 'title' => $this->title,
@@ -117,7 +104,6 @@ class ActivityLog extends Component
             ]);
         }
 
-        // Si la actividad existe (se creó o actualizó), guardamos archivos
         if (isset($activity) && $activity) {
             foreach ($this->files as $file) {
                 $path = $file->store('attachments/exercises', 'local');
@@ -130,7 +116,6 @@ class ActivityLog extends Component
             }
         }
 
-        // Reset total
         $this->reset(['title', 'duration_minutes', 'description', 'files', 'uploads', 'activityId', 'existingAttachments']);
         $this->date = Carbon::now()->format('Y-m-d\TH:i');
 

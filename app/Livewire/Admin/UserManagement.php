@@ -17,7 +17,6 @@ class UserManagement extends Component
     public $name;
     public $email;
 
-    // Crear Usuario
     public function createUser()
     {
         $this->validate([
@@ -27,24 +26,21 @@ class UserManagement extends Component
 
         $password = Str::password(10);
 
-        // --- LÓGICA DE NICK AUTOMÁTICO ---
         $baseNick = explode('@', $this->email)[0];
         $nick = $baseNick;
         $counter = 1;
         while (User::where('username', $nick)->exists()) {
             $nick = $baseNick . $counter++;
         }
-        // --------------------------------
 
         $user = User::create([
             'name' => $this->name,
             'email' => $this->email,
-            'username' => $nick, // <--- Guardamos el Nick
+            'username' => $nick,
             'password' => Hash::make($password),
             'role' => 'user',
         ]);
 
-        // 3. Enviar Email (Intenta enviarlo, si falla no rompe la app)
         try {
             Mail::to($user->email)->send(new NewUserCredentials($user->email, $password));
             session()->flash('status', "Usuario creado y correo enviado a {$this->email}");
@@ -58,7 +54,7 @@ class UserManagement extends Component
 
     public function deleteUser($id)
     {
-        if ($id === auth()->id()) return; // No te borres a ti mismo
+        if ($id === auth()->id()) return;
 
         User::find($id)?->delete();
     }

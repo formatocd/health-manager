@@ -12,18 +12,13 @@ trait HasContext
      */
     public function getTargetUserId()
     {
-        // 1. ¿Hay alguien seleccionado en la sesión?
         $targetId = session('viewing_user_id');
 
-        // 2. Si no hay nadie seleccionado, soy yo mismo.
         if (!$targetId) {
             return auth()->id();
         }
 
-        // 3. SEGURIDAD: ¿Realmente tengo permiso para ver a esa persona?
-        // (Evita que alguien inyecte un ID en la sesión manualmente)
         if (!auth()->user()->canView($targetId)) {
-            // Si no tengo permiso, reseteamos a mí mismo por seguridad
             session()->forget('viewing_user_id');
             return auth()->id();
         }

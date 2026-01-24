@@ -8,7 +8,7 @@ use Illuminate\Validation\ValidationException;
 
 class ShareData extends Component
 {
-    public $username = ''; // CAMBIO: Usamos username en vez de email para el input
+    public $username = '';
 
     public $search = '';
     public $searchResults = [];
@@ -20,9 +20,6 @@ class ShareData extends Component
             return;
         }
 
-        // BÚSQUEDA SEGURA: Solo por username (Nick)
-        // Opcional: permitir buscar por nombre real ('name') si quieres,
-        // pero NUNCA por email.
         $this->searchResults = User::where('id', '!=', auth()->id())
             ->where('username', 'like', '%' . $this->search . '%')
             ->take(5)

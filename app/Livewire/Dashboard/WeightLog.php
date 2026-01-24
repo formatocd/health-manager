@@ -8,12 +8,11 @@ use Carbon\Carbon;
 
 class WeightLog extends Component
 {
-    public $weightId = null; // Para saber si editamos
+    public $weightId = null;
     public $weight;
     public $date;
-    public $description; // Si tienes notas en peso
+    public $description;
 
-    // Listener para editar
     protected $listeners = ['edit-weight-item' => 'editWeight'];
 
     public function mount()
@@ -21,7 +20,6 @@ class WeightLog extends Component
         $this->date = Carbon::now()->format('Y-m-d\TH:i');
     }
 
-    // Cargar datos (Sin adjuntos es muy limpio)
     public function editWeight($id)
     {
         $record = MeasurementWeight::find($id);
@@ -32,7 +30,6 @@ class WeightLog extends Component
 
         $this->weightId = $record->id;
         $this->weight = $record->weight;
-        // $this->description = $record->description; // Descomenta si usas notas en peso
         $this->date = Carbon::parse($record->date)->format('Y-m-d\TH:i');
 
         $this->dispatch('open-modal', 'log-weight');
@@ -46,27 +43,22 @@ class WeightLog extends Component
         ]);
 
         if ($this->weightId) {
-            // Actualizar
             $record = MeasurementWeight::where('user_id', auth()->id())->find($this->weightId);
             if ($record) {
                 $record->update([
                     'weight' => $this->weight,
                     'date' => $this->date,
-                    // 'description' => $this->description,
                 ]);
             }
         } else {
-            // Crear
             MeasurementWeight::create([
                 'user_id' => auth()->id(),
                 'weight' => $this->weight,
                 'date' => $this->date,
-                // 'description' => $this->description,
             ]);
         }
 
-        // Reset
-        $this->reset(['weight', 'weightId']); // Resetear variables
+        $this->reset(['weight', 'weightId']);
         $this->date = Carbon::now()->format('Y-m-d\TH:i');
 
         $this->dispatch('close-modal', 'log-weight');

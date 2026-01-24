@@ -21,12 +21,10 @@ class HealthHistory extends Component
     public $search = '';
     public $type = '';
 
-    // HM-35: Variable para controlar items por página
     public $perPage = 20;
 
     protected $listeners = ['refresh-history' => '$refresh'];
 
-    // Resetear a la página 1 si cambian los filtros
     public function updatedSearch() { $this->resetPage(); }
     public function updatedType() { $this->resetPage(); }
     public function updatedPerPage() { $this->resetPage(); }
@@ -45,6 +43,7 @@ class HealthHistory extends Component
             default => null,
         };
         if (!$modelClass) return;
+
         $record = $modelClass::where('id', $id)->where('user_id', auth()->id())->first();
 
         if ($record) {
@@ -65,8 +64,6 @@ class HealthHistory extends Component
         $userId = $this->getTargetUserId();
         $allRecords = collect();
 
-        // 1. RECUPERAR TODOS LOS DATOS (Igual que antes)
-        // Citas
         if (empty($this->type) || $this->type === 'appointment') {
             $query = MedicalAppointment::where('user_id', $userId);
             if (!empty($this->search)) {
@@ -78,7 +75,6 @@ class HealthHistory extends Component
             $allRecords = $allRecords->concat($query->latest('date')->get());
         }
 
-        // Ejercicios
         if (empty($this->type) || $this->type === 'exercise') {
             $query = ActivityExercise::where('user_id', $userId);
             if (!empty($this->search)) {
@@ -90,30 +86,24 @@ class HealthHistory extends Component
             $allRecords = $allRecords->concat($query->latest('date')->get());
         }
 
-        // Peso
         if (empty($this->search) && (empty($this->type) || $this->type === 'weight')) {
             $allRecords = $allRecords->concat(MeasurementWeight::where('user_id', $userId)->latest('date')->get());
         }
 
-        // Corazón
         if (empty($this->search) && (empty($this->type) || $this->type === 'heart')) {
             $allRecords = $allRecords->concat(MeasurementHeart::where('user_id', $userId)->latest('date')->get());
         }
 
-        // 2. ORDENAR TODO
         $sortedRecords = $allRecords->sortByDesc('date');
 
-        // 3. PAGINACIÓN MANUAL (HM-35)
-        // Extraemos solo los items que tocan en esta página
         $items = $sortedRecords->forPage($this->getPage(), $this->perPage);
 
-        // Creamos el objeto paginador manualmente
         $paginatedRecords = new LengthAwarePaginator(
             $items,
-            $sortedRecords->count(), // Total real
+            $sortedRecords->count(),
             $this->perPage,
             $this->getPage(),
-            ['path' => request()->url(), 'query' => request()->query()] // Mantener la URL limpia
+            ['path' => request()->url(), 'query' => request()->query()]
         );
 
         return view('livewire.history.health-history', [

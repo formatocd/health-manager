@@ -20,7 +20,6 @@ class RecordDetails extends Component
 
     public function loadRecord($id, $type)
     {
-        // 1. Identificar modelo
         $modelClass = match($type) {
             'MedicalAppointment' => MedicalAppointment::class,
             'ActivityExercise' => ActivityExercise::class,
@@ -31,7 +30,6 @@ class RecordDetails extends Component
 
         if (!$modelClass) return;
 
-        // 2. Cargar registro
         $this->record = $modelClass::where('user_id', auth()->id())->find($id);
         $this->type = $type;
 
@@ -40,7 +38,6 @@ class RecordDetails extends Component
         }
     }
 
-    // Método seguro para descargar archivos privados
     public function downloadFile($attachmentId)
     {
         $attachment = Attachment::where('user_id', auth()->id())->find($attachmentId);
