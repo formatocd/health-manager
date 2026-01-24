@@ -1,59 +1,130 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# 🏥 Health Manager
 
-## About Laravel
+![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white) ![PHP](https://img.shields.io/badge/PHP-8.4+-777BB4?style=for-the-badge&logo=php&logoColor=white) ![Livewire](https://img.shields.io/badge/Livewire-3.x-4E56A6?style=for-the-badge&logo=livewire&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Health Manager** es una plataforma que permite a los usuarios llevar un registro de citas, control de peso y expedientes médicos, con la capacidad de compartir estos datos de forma segura con otros usuarios (familiares, médicos o cuidadores).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Características Principales
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* **📅 Calendario Interactivo:** Gestión visual de citas médicas y eventos de salud.
+* **⚖️ Control de Salud:** Registro y gráficas de evolución de peso.
+* **📂 Historial Médico:** Almacenamiento digital de informes y documentos.
+* **🤝 Compartición de Datos:** Sistema para compartir datos con otros usuarios (modo "Solo Lectura").
+* **👥 Roles y Usuarios:** Panel de administración para gestión de usuarios.
+* **🚀 Auto-Instalable:** Sistema de despliegue "Zero-Touch".
 
-## Learning Laravel
+## 🛠️ Requisitos del Sistema
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+* PHP 8.4 o superior.
+* Extensiones PHP requeridas por Laravel (Ctype, cURL, DOM, Fileinfo, Filter, Hash, Mbstring, OpenSSL, PCRE, PDO, Session, Tokenizer, XML).
+* [Base de datos compatible con Laravel](https://laravel.com/docs/12.x/database) (MySQL, MariaDB, PostgreSQL, SQLite, etc).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 📦 Instalación
 
-## Laravel Sponsors
+Para cualquiera de los dos métodos de instalación, es necesario disponer de las siguientes herramientas:
+* **Git**
+* **Composer**
+* **NPM** (Node.js)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Elige el método que se adapte a tu entorno:
 
-### Premium Partners
+### 🅰️ Opción A: Hosting con Consola (VPS / SSH)
+Estas operaciones se realizan directamente conectado a la consola de tu servidor.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1.  **Clonar el repositorio:**
+    ```bash
+    git clone [https://github.com/tu-usuario/health-manager.git](https://github.com/tu-usuario/health-manager.git)
+    cd health-manager
+    ```
 
-## Contributing
+2.  **Instalar dependencias y construir assets:**
+    ```bash
+    composer install --no-dev --optimize-autoloader
+    npm install && npm run build
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3.  **Configuración inicial:**
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
+    *Nota: No es necesario ejecutar migraciones; el sistema las lanzará automáticamente al entrar en la web.*
 
-## Code of Conduct
+### 🅱️ Opción B: Preparación en Local para Hosting Compartido (Sin Consola / FTP)
+Estas operaciones se realizan en tu ordenador personal antes de subir los archivos.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1.  **Clonar el repositorio en tu equipo:**
+    ```bash
+    git clone [https://github.com/tu-usuario/health-manager.git](https://github.com/tu-usuario/health-manager.git)
+    cd health-manager
+    ```
 
-## Security Vulnerabilities
+2.  **Instalar dependencias y construir assets:**
+    ```bash
+    composer install --no-dev --optimize-autoloader
+    npm install && npm run build
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3.  **Configuración inicial:**
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
 
-## License
+4.  **Subida de ficheros:**
+    Sube **todos** los archivos y carpetas del proyecto (incluyendo `vendor` y `public/build`) a tu hosting mediante FTP o Gestor de Archivos.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## ⚙️ Configuración del Entorno
+
+Una vez tengas los archivos en el servidor (ya sea por Opción A o B), debes configurar el archivo **`.env`** y el servidor web.
+
+### 1. Editar el archivo `.env`
+Asegúrate de configurar las siguientes variables con los datos de tu hosting:
+
+* **Aplicación (Producción):**
+    ```env
+    APP_ENV=production
+    APP_DEBUG=false
+    APP_URL=https://tudominio.com
+    ```
+* **Base de Datos:**
+    ```env
+    DB_CONNECTION=mysql
+    DB_HOST=host.de.tu.bd
+    DB_PORT=3306
+    DB_DATABASE=nombre_de_tu_bd
+    DB_USERNAME=tu_usuario
+    DB_PASSWORD=tu_contraseña
+    ```
+* **Servidor de Correo (SMTP):**
+    Necesario para el envío de notificaciones y recuperación de contraseñas.
+    ```env
+    MAIL_MAILER=smtp
+    MAIL_HOST=smtp.tuservidor.com
+    MAIL_PORT=587
+    MAIL_USERNAME=tu_email@tudominio.com
+    MAIL_PASSWORD=tu_contraseña_email
+    MAIL_ENCRYPTION=tls
+    MAIL_FROM_ADDRESS="no-reply@tudominio.com"
+    MAIL_FROM_NAME="${APP_NAME}"
+    ```
+
+### 2. Configurar Carpeta Pública
+⚠️ **Importante:** Debes configurar tu servidor web o hosting para que el dominio apunte a la carpeta **/public** del proyecto, no a la raíz.
+
+## 📖 Instrucciones de Uso
+
+### 1. Primer Acceso (Creación del Administrador)
+El sistema cuenta con una política de **"First User Takeover"**:
+* Al entrar a la web por primera vez, el sistema detectará la base de datos vacía y **creará las tablas automáticamente**.
+* Te redirigirá al registro obligatoriamente.
+* **El primer usuario registrado** será el **ADMINISTRADOR** de la aplicación.
+
+### 2. Gestión Diaria
+* **Calendario:** Haz clic en cualquier día para ver los detalles de los registros que contenga. Para añadir un registro pulsa en el botón `+` de la esquina inferior derecha y selecciona el tipo de registro.
+* **Perfil y Nick:** Configura tu `username` (Nick) en tu perfil para que otros te encuentren.
+* **Compartir Datos:** Ve a `Perfil` -> `Compartir Datos` e introduce el Nick de un usuario existente para darle acceso de lectura.
+
+## 📄 Licencia
+Este proyecto es de código abierto bajo la licencia [MIT](https://opensource.org/licenses/MIT).
