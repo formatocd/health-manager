@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        if (!app()->runningInConsole()) {
+            try {
+                if (!Schema::hasTable('users')) {
+                    Artisan::call('migrate', [
+                        '--force' => true,
+                    ]);
+                }
+            } catch (\Throwable $e) {}
+        }
     }
 }
