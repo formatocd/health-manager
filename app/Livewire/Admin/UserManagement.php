@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NewUserCredentials;
+use App\Models\Invitation;
 use Livewire\WithPagination;
 
 class UserManagement extends Component
@@ -16,6 +17,7 @@ class UserManagement extends Component
 
     public $name;
     public $email;
+    public ?string $generatedLink = null;
 
     public function createUser()
     {
@@ -64,5 +66,26 @@ class UserManagement extends Component
         return view('livewire.admin.user-management', [
             'users' => User::paginate(10)
         ])->layout('layouts.app');
+    }
+
+    public function generateInviteLink()
+    {
+        // Generamos un token aleatorio
+        $token = Str::random(40);
+
+        // Guardamos la invitación en la base de datos
+        Invitation::create([
+            'token' => $token,
+            'role' => 'user', // O el rol que corresponda
+            'expires_at' => now()->addHours(24), // Caduca en 24h
+        ]);
+
+        // Generamos la URL completa
+        $this->generatedLink = route('register.invite', ['token' => $token]);
+    }
+
+    public function resetModal()
+    {
+        $this->reset(['name', 'email', 'generatedLink']);
     }
 }
