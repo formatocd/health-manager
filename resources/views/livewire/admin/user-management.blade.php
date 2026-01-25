@@ -65,23 +65,65 @@
 
     {{-- MODAL CREAR USUARIO --}}
     <x-modal name="create-user" focusable>
-        <form wire:submit="createUser" class="p-6">
+        <div class="p-6">
             <h2 class="mb-4 text-lg font-medium text-gray-900 dark:text-gray-100">Invitar Nuevo Usuario</h2>
-            <div class="mb-4">
-                <x-input-label for="name" value="Nombre" />
-                <x-text-input id="name" wire:model="name" class="block w-full mt-1" required />
-                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+
+            {{-- OPCIÓN A: Formulario Clásico por Email --}}
+            <form wire:submit="createUser">
+                <div class="mb-4">
+                    <x-input-label for="name" value="Nombre" />
+                    <x-text-input id="name" wire:model="name" class="block w-full mt-1" required />
+                    <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                </div>
+                <div class="mb-4">
+                    <x-input-label for="email" value="Email" />
+                    <x-text-input id="email" wire:model="email" type="email" class="block w-full mt-1" required />
+                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                    <p class="mt-1 text-xs text-gray-500">Se enviará una contraseña automática a este correo.</p>
+                </div>
+
+                <div class="flex justify-end gap-2">
+                    <x-primary-button>Enviar Invitación por Email</x-primary-button>
+                </div>
+            </form>
+
+            {{-- SEPARADOR --}}
+            <div class="relative flex items-center py-5">
+                <div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                <span class="flex-shrink-0 mx-4 text-sm text-gray-400">O genera un enlace</span>
+                <div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
             </div>
-            <div class="mb-6">
-                <x-input-label for="email" value="Email" />
-                <x-text-input id="email" wire:model="email" type="email" class="block w-full mt-1" required />
-                <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                <p class="mt-1 text-xs text-gray-500">Se enviará una contraseña automática a este correo.</p>
+
+            {{-- OPCIÓN B: Generar Link --}}
+            <div class="text-center">
+                @if(!$generatedLink)
+                    <x-secondary-button wire:click="generateInviteLink">
+                        <i class="mr-2 fa-solid fa-link"></i> Generar Enlace Único (24h)
+                    </x-secondary-button>
+                @else
+                    {{-- MOSTRAR EL LINK SI YA SE GENERÓ --}}
+                    <div class="p-4 text-left border border-green-200 rounded-md bg-green-50 dark:bg-green-900">
+                        <p class="mb-2 text-sm font-bold text-green-800 dark:text-green-100">
+                            ¡Enlace generado! Copia y envía esto:
+                        </p>
+                        <div class="flex items-center gap-2">
+                            <input type="text" readonly value="{{ $generatedLink }}"
+                                   class="w-full text-sm text-gray-600 bg-white border-gray-300 rounded-md dark:bg-gray-800 focus:ring-0 dark:text-gray-300"
+                                   onclick="this.select()">
+                        </div>
+                        <p class="mt-2 text-xs text-green-600 dark:text-green-300">
+                            <i class="fa-regular fa-clock"></i> Caduca en 24 horas o tras el primer uso.
+                        </p>
+                    </div>
+
+                    {{-- Botón para cerrar o generar otro --}}
+                    <div class="flex justify-end mt-4">
+                        <button type="button" x-on:click="$dispatch('close-modal', 'create-user')" class="px-4 py-2 text-gray-800 transition bg-gray-200 rounded hover:bg-gray-300">
+                            Cerrar
+                        </button>
+                    </div>
+                @endif
             </div>
-            <div class="flex justify-end gap-2">
-                <button type="button" x-on:click="$dispatch('close-modal', 'create-user')" class="px-4 py-2 text-gray-800 bg-gray-200 rounded">Cancelar</button>
-                <x-primary-button>Enviar Invitación</x-primary-button>
-            </div>
-        </form>
+        </div>
     </x-modal>
 </div>
