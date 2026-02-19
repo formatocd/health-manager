@@ -1,0 +1,51 @@
+# Control de versiones
+.git
+.gitignore
+
+# Entorno local y variables de entorno
+# CRÍTICO: Evita que sus credenciales locales terminen en Docker Hub
+.env
+.env.*
+!.env.example
+
+# Dependencias de PHP (Se instalan dentro del contenedor)
+vendor/
+
+# Dependencias de Node.js (Se instalan en la etapa 1 del Dockerfile)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Archivos compilados localmente de Vite
+# Se compilan desde cero en la etapa 1 para evitar conflictos
+public/build/
+public/hot
+
+# Caché y logs de Laravel
+# Evita copiar sesiones, cachés o logs de su máquina local al contenedor
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+storage/logs/*
+!storage/logs/.gitignore
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+storage/framework/views/*
+!storage/framework/views/.gitignore
+storage/framework/testing/*
+!storage/framework/testing/.gitignore
+
+# Bases de datos locales
+*.sqlite
+*.sqlite3
+
+# Archivos de IDEs y sistemas operativos
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración de Docker local (opcional)
+docker-compose.yml
+docker-compose.override.yml
