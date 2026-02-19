@@ -110,7 +110,7 @@
                                     {{-- SI ES IMAGEN: Usamos la ruta segura que acabamos de crear --}}
                                     <div class="w-16 h-16 overflow-hidden border border-gray-200 rounded">
                                         <img
-                                            src="{{ route('attachment.show', $att->id) }}"
+                                            src="{{ route('private_attachment.show', $att->id) }}"
                                             alt="Adjunto"
                                             class="object-cover w-full h-full transition-transform duration-300 cursor-pointer hover:scale-110"
                                             onclick="window.open(this.src, '_blank')"
