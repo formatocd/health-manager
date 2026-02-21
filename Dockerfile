@@ -16,14 +16,13 @@ COPY . .
 RUN npm run build
 
 # ==========================================
-# Etapa 2: Entorno de Producción y Backend
+# Etapa 2: Entorno de Producción y Backend (Debian)
 # ==========================================
-FROM php:8.4-fpm-alpine
+FROM php:8.4-fpm
 
-# Establecer directorio de trabajo
 WORKDIR /var/www/html
 
-# Establecer variables de entorno por defecto (sin secretos ni interpolaciones)
+# Establecer variables de entorno
 ENV APP_NAME="Health Manager" \
     APP_ENV="production" \
     APP_URL="http://localhost" \
@@ -39,20 +38,31 @@ ENV APP_NAME="Health Manager" \
     MAIL_USERNAME="" \
     MAIL_FROM_ADDRESS="hello@example.com"
 
-# Instalar dependencias del sistema, Nginx, Supervisor y librerías para extensiones PHP
-RUN apk update && apk add --no-cache \
+# 1. Instalar dependencias de Debian
+RUN apt-get update && apt-get install -y \
     nginx \
     supervisor \
-    postgresql-dev \
+    libpq-dev \
     libzip-dev \
-    icu-dev \
-    oniguruma-dev \
-    curl-dev \
+    libicu-dev \
+    libonig-dev \
+    curl \
+    libcurl4-openssl-dev \
     libxml2-dev \
     zip \
-    unzip
+    unzip \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    file \
+    media-types \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Instalar y habilitar extensiones de PHP
+# 2. Configurar e instalar extensión GD
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd
+
+# 3. Instalar resto de extensiones PHP
 RUN docker-php-ext-install \
     pdo_pgsql \
     mbstring \
@@ -61,46 +71,45 @@ RUN docker-php-ext-install \
     curl \
     zip \
     intl \
-    opcache
+    opcache \
+    exif
 
-# Configurar OPcache para optimizar el rendimiento en producción
+# 4. Configurar OPcache
 RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
     && echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
     && echo "opcache.memory_consumption=128" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
     && echo "opcache.interned_strings_buffer=8" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
     && echo "opcache.max_accelerated_files=10000" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
 
-# Instalar Composer
+# 5. Instalar Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copiar los archivos del proyecto
+# 6. Copiar archivos del proyecto
 COPY . .
 
-# Copiar los assets compilados de la etapa de frontend
+# 7. Copiar assets del frontend
 COPY --from=frontend /app/public/build ./public/build
 
-# Instalar dependencias de PHP para producción
+# 8. Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# Otorgar permisos al usuario www-data (usuario estándar de PHP-FPM y Nginx)
+# 9. Permisos
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
-# Copiar archivos de configuración de Nginx y Supervisor
-COPY docker/nginx.conf /etc/nginx/http.d/default.conf
+# 10. Configurar Nginx y Supervisor en Debian
+# (Debian guarda la config de nginx en conf.d en vez de http.d y borramos la ruta por defecto para que no haya conflictos)
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+RUN rm -f /etc/nginx/sites-enabled/default
+
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Configurar Nginx para que se ejecute bajo el usuario www-data
-RUN sed -i 's/user nginx;/user www-data;/' /etc/nginx/nginx.conf
-
-# Copiar el script de entrypoint
+# 11. Copiar Entrypoint
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Exponer el puerto web
 EXPOSE 80
 
-# Definir el Entrypoint y el Comando por defecto
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
