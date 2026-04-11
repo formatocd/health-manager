@@ -37,14 +37,42 @@
 
         {{-- Descripción --}}
         <div class="mb-6">
-            <x-input-label for="description" value="Notas (Opcional)" />
-            <textarea
-                id="description"
-                wire:model="description"
-                class="block w-full mt-1 border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600"
-                rows="3"
-                placeholder="Traer radiografías anteriores..."
-            ></textarea>
+            <x-input-label for="description" value="Notas (Opcional)" class="mb-1" />
+            <div wire:ignore
+                x-data="{
+                    content: @entangle('description'),
+                    init() {
+                        const editor = new toastui.Editor({
+                            el: this.$refs.editorBase,
+                            initialValue: this.content || '',
+                            initialEditType: 'wysiwyg',
+                            previewStyle: 'vertical',
+                            height: '250px',
+                            theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
+                            events: {
+                                change: () => {
+                                    this.content = editor.getHTML();
+                                }
+                            }
+                        });
+
+                        const observer = new MutationObserver((mutations) => {
+                            mutations.forEach((mutation) => {
+                                if (mutation.attributeName === 'class') {
+                                    if(document.documentElement.classList.contains('dark')) {
+                                        this.$refs.editorBase.querySelector('.toastui-editor-defaultUI').classList.add('toastui-editor-dark');
+                                    } else {
+                                        this.$refs.editorBase.querySelector('.toastui-editor-defaultUI').classList.remove('toastui-editor-dark');
+                                    }
+                                }
+                            });
+                        });
+                        observer.observe(document.documentElement, { attributes: true });
+                    }
+                }"
+            >
+                <div x-ref="editorBase" class="bg-white dark:bg-gray-900"></div>
+            </div>
             <x-input-error :messages="$errors->get('description')" class="mt-2" />
         </div>
 
