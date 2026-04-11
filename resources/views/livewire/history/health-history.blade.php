@@ -133,7 +133,7 @@
                                         {{-- 4. Notas/Adjuntos --}}
                                         <td class="max-w-xs px-6 py-4 text-gray-500 truncate">
                                             @if(!empty($record->description))
-                                                <span title="{{ $record->description }}">{{ Str::limit($record->description, 30) }}</span>
+                                                <span title="{{ strip_tags($record->description) }}">{{ Str::limit(strip_tags($record->description), 30) }}</span>
                                             @endif
                                             @if(method_exists($record, 'attachments') && $record->attachments->isNotEmpty())
                                                 <span class="ml-2 text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded text-xs font-bold border border-indigo-200">

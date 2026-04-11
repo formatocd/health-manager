@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Toast UI Editor Dark Mode Text Fixes */
+.dark .toastui-editor-contents,
+.dark .toastui-editor-contents p,
+.dark .toastui-editor-contents h1,
+.dark .toastui-editor-contents h2,
+.dark .toastui-editor-contents h3,
+.dark .toastui-editor-contents h4,
+.dark .toastui-editor-contents h5,
+.dark .toastui-editor-contents h6,
+.dark .toastui-editor-contents li,
+.dark .toastui-editor-contents ul,
+.dark .toastui-editor-contents ol,
+.dark .toastui-editor-contents span,
+.dark .toastui-editor-contents strong,
+.dark .toastui-editor-contents i {
+    color: #e5e7eb !important; /* text-gray-200 */
+}
+
