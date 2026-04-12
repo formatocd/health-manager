@@ -32,7 +32,7 @@ class AppointmentLog extends Component
     public function updatedUploads()
     {
         $this->files = array_merge($this->files, $this->uploads);
-        $this->uploads = [];
+        $this->reset('uploads');
     }
 
     public function loadAppointment($id)
