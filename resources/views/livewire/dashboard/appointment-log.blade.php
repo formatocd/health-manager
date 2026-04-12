@@ -77,27 +77,44 @@
         </div>
 
         {{-- ZONA DRAG & DROP --}}
-        <div class="mb-6">
+        <div class="mb-6" x-data="{ 
+            isDropping: false, 
+            isUploading: false, 
+            uploadError: false,
+            handleFiles(files) {
+                const maxBytes = {{ (int) str_replace('M', '', ini_get('upload_max_filesize')) * 1024 * 1024 }};
+                if(Array.from(files).some(f => f.size > maxBytes)) {
+                    this.uploadError = true;
+                    this.isDropping = false;
+                    this.$refs.fileInput.value = '';
+                    return;
+                }
+                this.uploadError = false;
+                this.isUploading = true;
+                $wire.uploadMultiple('uploads', files, 
+                    () => { this.isUploading = false; this.$refs.fileInput.value = ''; },
+                    () => { this.isUploading = false; this.uploadError = true; this.$refs.fileInput.value = ''; }
+                );
+            }
+        }">
             <x-input-label value="Adjuntar Archivos (Informes, Recetas...)" class="mb-2" />
 
             <div
-                x-data="{ isDropping: false }"
                 x-on:dragover.prevent="isDropping = true"
                 x-on:dragleave.prevent="isDropping = false"
                 x-on:drop.prevent="
                     isDropping = false;
-                    $refs.fileInput.files = $event.dataTransfer.files;
-                    $refs.fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    handleFiles($event.dataTransfer.files);
                 "
                 class="relative flex flex-col items-center justify-center w-full h-32 transition-colors duration-200 border-2 border-dashed rounded-lg cursor-pointer"
                 :class="isDropping ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800'"
             >
-                {{-- CAMBIO: wire:model ahora apunta a 'uploads' --}}
+                {{-- Input gestionado manualmente por Alpine --}}
                 <input
                     type="file"
-                    wire:model="uploads"
                     multiple
                     x-ref="fileInput"
+                    x-on:change="handleFiles($event.target.files)"
                     class="absolute inset-0 z-10 w-full h-full opacity-0 cursor-pointer"
                 >
 
@@ -110,17 +127,24 @@
                 </div>
             </div>
 
-            {{-- Mensaje de carga (miramos uploads) --}}
-            <div wire:loading wire:target="uploads" class="mt-2 text-sm font-medium text-blue-500">
+            {{-- Mensaje de carga (Alpine) --}}
+            <div x-show="isUploading" class="mt-2 text-sm font-medium text-blue-500" style="display: none;">
                 <i class="mr-1 fa-solid fa-spinner fa-spin"></i> Procesando archivos...
             </div>
+            
             <x-input-error :messages="$errors->get('files.*')" class="mt-2" />
+            
+            {{-- Mensaje de error de límite (Alpine) --}}
+            <div x-show="uploadError" class="mt-2 text-sm font-medium text-red-600" style="display: none;">
+                <i class="mr-1 fa-solid fa-circle-exclamation"></i>
+                El archivo excede el límite máximo de {{ ini_get('upload_max_filesize') }}B permitido por el servidor (o no tiene un formato válido).
+            </div>
 
             {{-- LISTA DE ARCHIVOS ACUMULADOS (miramos files) --}}
             @if(!empty($files))
                 <ul class="mt-3 space-y-2">
                     @foreach($files as $index => $file)
-                        <li class="flex items-center justify-between p-2 text-sm border rounded bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+                        <li wire:key="new-file-{{ $index }}" class="flex items-center justify-between p-2 text-sm border rounded bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
                             <div class="flex items-center truncate">
                                 @if(Str::startsWith($file->getMimeType(), 'image/'))
                                     <i class="mr-2 text-indigo-500 fa-regular fa-image"></i>
@@ -133,7 +157,7 @@
                                 </span>
                             </div>
 
-                            <button type="button" wire:click="removeFile({{ $index }})" class="text-gray-400 transition hover:text-red-500">
+                            <button type="button" wire:click="removeNewFile({{ $index }})" class="text-gray-400 transition hover:text-red-500">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                         </li>
@@ -148,7 +172,7 @@
                 <h3 class="mb-2 text-xs font-bold text-gray-500 uppercase">Archivos Guardados:</h3>
                 <ul class="space-y-2">
                     @foreach($existingAttachments as $att)
-                        <li class="flex items-center justify-between p-2 text-sm bg-white border rounded dark:bg-gray-900 dark:border-gray-700">
+                        <li wire:key="existing-file-{{ $att->id }}" class="flex items-center justify-between p-2 text-sm bg-white border rounded dark:bg-gray-900 dark:border-gray-700">
                             <div class="flex items-center gap-2 truncate">
                                 @if(Str::startsWith($att->mime_type, 'image/'))
                                     <i class="text-indigo-500 fa-regular fa-image"></i>
