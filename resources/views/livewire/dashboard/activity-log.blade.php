@@ -51,37 +51,88 @@
 
         {{-- Notas --}}
         <div class="mb-6">
-            <x-input-label for="desc_act" value="Notas (Opcional)" />
-            <textarea 
-                id="desc_act" 
-                wire:model="description" 
-                class="block w-full mt-1 border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600" 
-                rows="2" 
-                placeholder="Sensaciones, series realizadas..."
-            ></textarea>
+            <x-input-label for="desc_act" value="Notas (Opcional)" class="mb-1" />
+            <div wire:ignore
+                x-data="{
+                    content: @entangle('description'),
+                    init() {
+                        const editor = new toastui.Editor({
+                            el: this.$refs.editorBase,
+                            initialValue: this.content || '',
+                            initialEditType: 'wysiwyg',
+                            previewStyle: 'vertical',
+                            height: '250px',
+                            theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
+                            events: {
+                                change: () => {
+                                    this.content = editor.getHTML();
+                                }
+                            }
+                        });
+
+                        const observer = new MutationObserver((mutations) => {
+                            mutations.forEach((mutation) => {
+                                if (mutation.attributeName === 'class') {
+                                    if(document.documentElement.classList.contains('dark')) {
+                                        this.$refs.editorBase.querySelector('.toastui-editor-defaultUI').classList.add('toastui-editor-dark');
+                                    } else {
+                                        this.$refs.editorBase.querySelector('.toastui-editor-defaultUI').classList.remove('toastui-editor-dark');
+                                    }
+                                }
+                            });
+                        });
+                        observer.observe(document.documentElement, { attributes: true });
+
+                        this.$watch('content', (value) => {
+                            if (value !== editor.getHTML()) {
+                                editor.setHTML(value || '');
+                            }
+                        });
+                    }
+                }"
+            >
+                <div x-ref="editorBase" class="bg-white dark:bg-gray-900"></div>
+            </div>
         </div>
         
         {{-- ZONA DRAG & DROP --}}
-        <div class="mb-6">
+        <div class="mb-6" x-data="{ 
+            isDropping: false, 
+            isUploading: false, 
+            uploadError: false,
+            handleFiles(files) {
+                const maxBytes = {{ (int) str_replace('M', '', ini_get('upload_max_filesize')) * 1024 * 1024 }};
+                if(Array.from(files).some(f => f.size > maxBytes)) {
+                    this.uploadError = true;
+                    this.isDropping = false;
+                    this.$refs.fileInput.value = '';
+                    return;
+                }
+                this.uploadError = false;
+                this.isUploading = true;
+                $wire.uploadMultiple('uploads', files, 
+                    () => { this.isUploading = false; this.$refs.fileInput.value = ''; },
+                    () => { this.isUploading = false; this.uploadError = true; this.$refs.fileInput.value = ''; }
+                );
+            }
+        }">
             <x-input-label value="Fotos o Archivos (Opcional)" class="mb-2" />
             
             <div 
-                x-data="{ isDropping: false }"
                 x-on:dragover.prevent="isDropping = true"
                 x-on:dragleave.prevent="isDropping = false"
                 x-on:drop.prevent="
                     isDropping = false;
-                    $refs.fileInput.files = $event.dataTransfer.files;
-                    $refs.fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    handleFiles($event.dataTransfer.files);
                 "
                 class="relative flex flex-col items-center justify-center w-full h-32 transition-colors duration-200 border-2 border-dashed rounded-lg cursor-pointer"
                 :class="isDropping ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800'"
             >
                 <input 
                     type="file" 
-                    wire:model="uploads" 
                     multiple 
                     x-ref="fileInput"
+                    x-on:change="handleFiles($event.target.files)"
                     class="absolute inset-0 z-10 w-full h-full opacity-0 cursor-pointer"
                 >
 
@@ -94,22 +145,27 @@
                 </div>
             </div>
 
-            <div wire:loading wire:target="uploads" class="mt-2 text-sm text-orange-500 font-medium">
+            <div x-show="isUploading" class="mt-2 text-sm text-orange-500 font-medium" style="display: none;">
                 <i class="fa-solid fa-spinner fa-spin mr-1"></i> Procesando imágenes...
             </div>
             <x-input-error :messages="$errors->get('files.*')" class="mt-2" />
+            
+            <div x-show="uploadError" class="mt-2 text-sm font-medium text-red-600" style="display: none;">
+                <i class="mr-1 fa-solid fa-circle-exclamation"></i>
+                El archivo excede el límite máximo de {{ ini_get('upload_max_filesize') }}B permitido por el servidor.
+            </div>
 
             @if(!empty($files))
                 <ul class="mt-3 space-y-2">
                     @foreach($files as $index => $file)
-                        <li class="flex items-center justify-between text-sm bg-gray-50 dark:bg-gray-700 p-2 rounded border dark:border-gray-600">
+                        <li wire:key="new-file-{{ $index }}" class="flex items-center justify-between text-sm bg-gray-50 dark:bg-gray-700 p-2 rounded border dark:border-gray-600">
                             <div class="flex items-center truncate">
                                 <i class="fa-regular fa-image text-orange-500 mr-2"></i>
                                 <span class="text-gray-700 dark:text-gray-300 truncate max-w-[200px]">
                                     {{ $file->getClientOriginalName() }}
                                 </span>
                             </div>
-                            <button type="button" wire:click="removeFile({{ $index }})" class="text-gray-400 hover:text-red-500 transition">
+                            <button type="button" wire:click="removeNewFile({{ $index }})" class="text-gray-400 hover:text-red-500 transition">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
                         </li>
@@ -125,7 +181,7 @@
                 <h3 class="text-xs font-bold text-gray-500 uppercase mb-2">Archivos Guardados:</h3>
                 <ul class="space-y-2">
                     @foreach($existingAttachments as $att)
-                        <li class="flex items-center justify-between text-sm bg-white dark:bg-gray-900 p-2 rounded border dark:border-gray-700">
+                        <li wire:key="existing-file-{{ $att->id }}" class="flex items-center justify-between text-sm bg-white dark:bg-gray-900 p-2 rounded border dark:border-gray-700">
                             <div class="flex items-center gap-2 truncate">
                                 @if(Str::startsWith($att->mime_type, 'image/'))
                                     <i class="fa-regular fa-image text-indigo-500"></i>

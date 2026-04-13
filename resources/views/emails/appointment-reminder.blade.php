@@ -26,7 +26,7 @@
         </div>
 
         @if($appointment->description)
-            <p><strong>Notas:</strong> {{ $appointment->description }}</p>
+            <div><strong>Notas:</strong> {!! $appointment->description !!}</div>
         @endif
 
         <p>¡Que tengas un buen día!</p>
