@@ -223,7 +223,7 @@
                                                 <span>{{ $e->duration_minutes }} min</span>
                                             </div>
                                             @if($e->description)
-                                                <p class="mb-2 text-xs italic text-gray-500 dark:text-gray-400">{{ $e->description }}</p>
+                                                <div class="mb-2 toastui-editor-contents" style="background: transparent;">{!! $e->description !!}</div>
                                             @endif
 
                                             {{-- VISUALIZACIÓN DE ADJUNTOS --}}
@@ -262,7 +262,7 @@
                                                 <span>{{ $a->date->format('H:i') }}</span>
                                             </div>
                                             @if($a->description)
-                                                <p class="mb-2 text-xs italic text-gray-500 dark:text-gray-400">{{ $a->description }}</p>
+                                                <div class="mb-2 toastui-editor-contents" style="background: transparent;">{!! $a->description !!}</div>
                                             @endif
 
                                             {{-- VISUALIZACIÓN DE ADJUNTOS --}}

@@ -66,7 +66,7 @@
                         @endif
                     </td>
                     <td>
-                        {{ $record->description ?? '-' }}
+                        {!! $record->description ?? '-' !!}
                     </td>
                 </tr>
             @endforeach
