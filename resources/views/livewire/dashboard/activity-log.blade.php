@@ -82,6 +82,12 @@
                             });
                         });
                         observer.observe(document.documentElement, { attributes: true });
+
+                        this.$watch('content', (value) => {
+                            if (value !== editor.getHTML()) {
+                                editor.setHTML(value || '');
+                            }
+                        });
                     }
                 }"
             >

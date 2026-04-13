@@ -20,3 +20,20 @@
     color: #e5e7eb !important; /* text-gray-200 */
 }
 
+/* Force ToastUI to use the app's default font */
+.toastui-editor-defaultUI,
+.toastui-editor-contents,
+.toastui-editor-contents p,
+.toastui-editor-contents h1,
+.toastui-editor-contents h2,
+.toastui-editor-contents h3,
+.toastui-editor-contents h4,
+.toastui-editor-contents h5,
+.toastui-editor-contents h6,
+.toastui-editor-contents li,
+.toastui-editor-contents span,
+.toastui-editor-contents strong,
+.toastui-editor-contents i {
+    font-family: inherit !important;
+}
+

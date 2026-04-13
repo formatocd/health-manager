@@ -65,7 +65,7 @@
                                     <th class="px-6 py-3">Tipo</th>
                                     <th class="px-6 py-3">Fecha</th>
                                     <th class="px-6 py-3">Detalle Principal</th>
-                                    <th class="px-6 py-3">Notas / Adjuntos</th>
+                                    <th class="px-6 py-3">Adjuntos</th>
                                     <th class="px-6 py-3 text-right">Acciones</th>
                                 </tr>
                             </thead>
@@ -132,9 +132,6 @@
 
                                         {{-- 4. Notas/Adjuntos --}}
                                         <td class="max-w-xs px-6 py-4 text-gray-500 truncate">
-                                            @if(!empty($record->description))
-                                                <span title="{{ strip_tags($record->description) }}">{{ Str::limit(strip_tags($record->description), 30) }}</span>
-                                            @endif
                                             @if(method_exists($record, 'attachments') && $record->attachments->isNotEmpty())
                                                 <span class="ml-2 text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded text-xs font-bold border border-indigo-200">
                                                     <i class="fa-solid fa-paperclip"></i> {{ $record->attachments->count() }}

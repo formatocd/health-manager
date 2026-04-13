@@ -88,7 +88,7 @@
             @if(!empty($record->description))
                 <div class="col-span-1 p-4 rounded-lg md:col-span-2 bg-gray-50 dark:bg-gray-700/50">
                     <h3 class="mb-2 text-xs font-bold text-gray-500 uppercase">Notas / Observaciones</h3>
-                    <div class="text-gray-700 dark:text-gray-300 toastui-editor-contents" style="background: transparent;">{!! $record->description !!}</div>
+                    <div class="toastui-editor-contents" style="background: transparent;">{!! $record->description !!}</div>
                 </div>
             @endif
         </div>
