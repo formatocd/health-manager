@@ -14,12 +14,26 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <!-- Scripts -->
         <script>
-            // On page load or when changing themes, best to add inline in `head` to avoid FOUC
-            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
+            function applyTheme() {
+                if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
             }
+            applyTheme();
+            document.addEventListener('livewire:navigated', applyTheme);
+            
+            // Prevenir el fogueo blanco (FOUC) forzando sincrónicamente la clase dark 
+            // si Livewire la elimina al inyectar el HTML del servidor durante la navegación
+            new MutationObserver(() => {
+                let isDarkMode = localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (isDarkMode && !document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.add('dark');
+                } else if (!isDarkMode && document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                }
+            }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
         </script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <!-- ToastUI Editor -->
