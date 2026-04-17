@@ -24,8 +24,6 @@
             applyTheme();
             document.addEventListener('livewire:navigated', applyTheme);
             
-            // Prevenir el fogueo blanco (FOUC) forzando sincrónicamente la clase dark 
-            // si Livewire la elimina al inyectar el HTML del servidor durante la navegación
             new MutationObserver(() => {
                 let isDarkMode = localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
                 if (isDarkMode && !document.documentElement.classList.contains('dark')) {
