@@ -62,19 +62,9 @@ new class extends Component
                             <i class="mr-2 text-gray-400 fa-solid fa-user"></i> {{ __('Profile') }}
                         </x-dropdown-link>
 
-                        <div class="border-t border-gray-100 dark:border-gray-600"></div>
-
-                        <button x-data="{ isDark: document.documentElement.classList.contains('dark') }" 
-                                @click="isDark = !isDark; 
-                                        localStorage.theme = isDark ? 'dark' : 'light'; 
-                                        if (isDark) { document.documentElement.classList.add('dark'); } 
-                                        else { document.documentElement.classList.remove('dark'); }" 
-                                class="w-full text-start">
-                            <x-dropdown-link>
-                                <i class="mr-2 fa-solid" :class="isDark ? 'fa-sun text-yellow-400' : 'fa-moon text-gray-500'"></i> 
-                                <span x-text="isDark ? '{{ __('Modo Claro') }}' : '{{ __('Modo Oscuro') }}'"></span>
-                            </x-dropdown-link>
-                        </button>
+                        <x-dropdown-link :href="route('settings')" wire:navigate>
+                            <i class="mr-2 text-gray-400 fa-solid fa-gear"></i> {{ __('Configuración') }}
+                        </x-dropdown-link>
 
                         @if(auth()->user()->isAdmin())
                             <div class="border-t border-gray-100 dark:border-gray-600"></div>
@@ -124,17 +114,9 @@ new class extends Component
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
-                <button x-data="{ isDark: document.documentElement.classList.contains('dark') }" 
-                        @click="isDark = !isDark; 
-                                localStorage.theme = isDark ? 'dark' : 'light'; 
-                                if (isDark) { document.documentElement.classList.add('dark'); } 
-                                else { document.documentElement.classList.remove('dark'); }" 
-                        class="w-full text-start">
-                    <x-responsive-nav-link>
-                        <i class="mr-2 fa-solid" :class="isDark ? 'fa-sun text-yellow-400' : 'fa-moon text-gray-500'"></i> 
-                        <span x-text="isDark ? '{{ __('Modo Claro') }}' : '{{ __('Modo Oscuro') }}'"></span>
-                    </x-responsive-nav-link>
-                </button>
+                <x-responsive-nav-link :href="route('settings')" wire:navigate>
+                    {{ __('Configuración') }}
+                </x-responsive-nav-link>
                 @if(auth()->user()->isAdmin())
                     <x-responsive-nav-link :href="route('admin.users')">
                         {{ __('Gestión Usuarios') }}
