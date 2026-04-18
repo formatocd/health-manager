@@ -14,6 +14,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/history', HealthHistory::class)->name('history');
     Route::get('/stats', HealthStats::class)->name('stats');
     Route::view('/profile', 'profile')->name('profile');
+    Route::view('/settings', 'settings')->name('settings');
     Route::get('/private-attachment/{attachment}', [AttachmentController::class, 'show'])->name('private_attachment.show');
     Route::get('/export/history', [ExportController::class, 'downloadHistory'])->name('export.history');
     Route::get('/attachment/{id}', [FileController::class, 'show'])->name('attachment.show');
