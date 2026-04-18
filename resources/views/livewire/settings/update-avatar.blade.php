@@ -67,7 +67,7 @@ new class extends Component
         <form wire:submit="updateProfilePhoto">
             <!-- Profile Photo File Input -->
             <input type="file" id="photo" class="hidden"
-                        wire:model="photo"
+                        wire:model.live="photo"
                         x-ref="photo"
                         x-on:change="
                                 const file = $refs.photo.files[0];
@@ -113,7 +113,10 @@ new class extends Component
             </div>
             
             <div class="flex items-center gap-4 mt-6" x-show="photoPreview" style="display: none;">
-                <x-primary-button>{{ __('Guardar Foto') }}</x-primary-button>
+                <x-primary-button wire:loading.attr="disabled" wire:target="photo, updateProfilePhoto">{{ __('Guardar Foto') }}</x-primary-button>
+                <div wire:loading wire:target="photo" class="text-sm text-gray-500 dark:text-gray-400">
+                    Subiendo imagen...
+                </div>
             </div>
             
             <div class="mt-2">
