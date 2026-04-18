@@ -47,7 +47,19 @@ new class extends Component
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
-                            <div x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
+                            <div class="flex items-center gap-3 text-left">
+                                @if(auth()->user()->avatar_url)
+                                    <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="object-cover w-10 h-10 rounded-full">
+                                @else
+                                    <div class="flex items-center justify-center w-10 h-10 font-bold text-purple-700 bg-purple-100 rounded-full dark:bg-purple-900 dark:text-purple-300">
+                                        {{ strtoupper(substr(auth()->user()->username ?? auth()->user()->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                <div>
+                                    <div class="font-bold text-gray-800 dark:text-gray-200" x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
+                                    <div class="text-xs text-gray-500">{{ auth()->user()->username }}</div>
+                                </div>
+                            </div>
 
                             <div class="ms-1">
                                 <svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -104,9 +116,18 @@ new class extends Component
         </div>
 
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-            <div class="px-4">
-                <div class="text-base font-medium text-gray-800 dark:text-gray-200" x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
-                <div class="text-sm font-medium text-gray-500">{{ auth()->user()->email }}</div>
+            <div class="flex items-center gap-3 px-4">
+                @if(auth()->user()->avatar_url)
+                    <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="object-cover w-10 h-10 rounded-full">
+                @else
+                    <div class="flex items-center justify-center w-10 h-10 font-bold text-purple-700 bg-purple-100 rounded-full dark:bg-purple-900 dark:text-purple-300">
+                        {{ strtoupper(substr(auth()->user()->username ?? auth()->user()->name, 0, 1)) }}
+                    </div>
+                @endif
+                <div>
+                    <div class="text-base font-medium text-gray-800 dark:text-gray-200" x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
+                    <div class="text-sm font-medium text-gray-500">{{ auth()->user()->username }}</div>
+                </div>
             </div>
 
             <div class="mt-3 space-y-1">
