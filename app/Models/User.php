@@ -28,7 +28,7 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute()
     {
         return $this->avatar
-            ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->avatar)
+            ? asset($this->avatar)
             : null;
     }
 

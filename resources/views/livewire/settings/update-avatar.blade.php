@@ -19,14 +19,22 @@ new class extends Component
 
         $user = Auth::user();
 
-        if ($user->avatar) {
-            Storage::disk('public')->delete($user->avatar);
+        if ($user->avatar && file_exists(public_path($user->avatar))) {
+            unlink(public_path($user->avatar));
         }
 
-        $path = $this->photo->store('avatars', 'public');
+        $photoName = $user->id . '_' . time() . '.' . $this->photo->extension();
+        
+        // Creamos la carpeta si no existe
+        if (!file_exists(public_path('avatars'))) {
+            mkdir(public_path('avatars'), 0777, true);
+        }
+        
+        // Copiamos el archivo (->move de Laravel usa rules exclusivas de raw uploads que chocan con los tmp de Livewire)
+        copy($this->photo->getRealPath(), public_path('avatars/' . $photoName));
 
         $user->forceFill([
-            'avatar' => $path,
+            'avatar' => 'avatars/' . $photoName,
         ])->save();
 
         $this->dispatch('profile-updated'); 
@@ -39,8 +47,8 @@ new class extends Component
     {
         $user = Auth::user();
 
-        if ($user->avatar) {
-            Storage::disk('public')->delete($user->avatar);
+        if ($user->avatar && file_exists(public_path($user->avatar))) {
+            unlink(public_path($user->avatar));
             
             $user->forceFill([
                 'avatar' => null,
