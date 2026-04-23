@@ -155,21 +155,23 @@
     <x-modal name="day-details" focusable>
         <div class="p-6 bg-white dark:bg-gray-800">
 
+            {{-- CONTENIDO --}}
+            @php
+                $isReadOnly = session('viewing_user_id') && session('viewing_user_id') != auth()->id();
+            @endphp
+            
             {{-- Cabecera --}}
             <div class="flex items-center justify-between pb-2 mb-4 border-b dark:border-gray-700">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                     Resumen del {{ $selectedDate ? \Carbon\Carbon::parse($selectedDate)->translatedFormat('d \d\e F') : '' }}
                 </h2>
+                
                 {{-- Botón X --}}
                 <button x-on:click="$dispatch('close-modal', 'day-details')" class="text-gray-400 transition hover:text-gray-600 dark:hover:text-gray-300">
                     <i class="fa-solid fa-xmark fa-lg"></i>
                 </button>
             </div>
 
-            {{-- CONTENIDO --}}
-            @php
-                $isReadOnly = session('viewing_user_id') && session('viewing_user_id') != auth()->id();
-            @endphp
             @if($selectedDate)
                 <div class="space-y-6">
                     @if(collect($dayDetails)->flatten()->isEmpty())
@@ -321,8 +323,65 @@
                 </div>
             @endif
 
-            {{-- Botón Cerrar --}}
-            <div class="flex justify-end mt-6">
+            {{-- Botonera Inferior --}}
+            <div class="flex items-end justify-between mt-6">
+                {{-- Opciones Añadir --}}
+                <div x-data="{ addMenuOpen: false }" class="flex items-center gap-3">
+                    @if(!$isReadOnly && $selectedDate)
+                        {{-- BOTÓN PRINCIPAL (+) --}}
+                        <button
+                            @click="addMenuOpen = !addMenuOpen"
+                            class="flex items-center justify-center w-10 h-10 text-white transition transform bg-indigo-600 rounded-full shadow-lg hover:bg-indigo-700 hover:scale-105 focus:outline-none"
+                        >
+                            <i class="text-lg transition-transform duration-300 fa-solid fa-plus" :class="{'rotate-45': addMenuOpen}"></i>
+                        </button>
+
+                        {{-- Opciones desplegables horizontales --}}
+                        <div
+                            x-show="addMenuOpen"
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 -translate-x-4"
+                            x-transition:enter-end="opacity-100 translate-x-0"
+                            x-transition:leave="transition ease-in duration-200"
+                            x-transition:leave-start="opacity-100 translate-x-0"
+                            x-transition:leave-end="opacity-0 -translate-x-4"
+                            class="flex items-center gap-2"
+                            style="display: none;"
+                        >
+                            {{-- 1. Cita --}}
+                            <button
+                                x-on:click="$dispatch('close-modal', 'day-details'); $dispatch('create-appointment-for-date', { date: '{{ $selectedDate }}' }); addMenuOpen = false"
+                                class="flex items-center justify-center w-8 h-8 text-green-600 transition bg-green-100 rounded-full shadow hover:bg-green-200 dark:bg-green-900 dark:text-green-400 hover:scale-110" title="Nueva Cita">
+                                <i class="fa-solid fa-user-doctor"></i>
+                            </button>
+
+                            {{-- 2. Ejercicio --}}
+                            <button
+                                x-on:click="$dispatch('close-modal', 'day-details'); $dispatch('create-activity-for-date', { date: '{{ $selectedDate }}' }); addMenuOpen = false"
+                                class="flex items-center justify-center w-8 h-8 text-orange-600 transition bg-orange-100 rounded-full shadow hover:bg-orange-200 dark:bg-orange-900 dark:text-orange-400 hover:scale-110" title="Ejercicio">
+                                <i class="fa-solid fa-person-running"></i>
+                            </button>
+
+                            {{-- 3. Peso --}}
+                            <button
+                                x-on:click="$dispatch('close-modal', 'day-details'); $dispatch('create-weight-for-date', { date: '{{ $selectedDate }}' }); addMenuOpen = false"
+                                class="flex items-center justify-center w-8 h-8 text-blue-600 transition bg-blue-100 rounded-full shadow hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-400 hover:scale-110" title="Registrar Peso">
+                                <i class="fa-solid fa-weight-scale"></i>
+                            </button>
+
+                            {{-- 4. Corazón --}}
+                            <button
+                                x-on:click="$dispatch('close-modal', 'day-details'); $dispatch('create-heart-for-date', { date: '{{ $selectedDate }}' }); addMenuOpen = false"
+                                class="flex items-center justify-center w-8 h-8 text-red-600 transition bg-red-100 rounded-full shadow hover:bg-red-200 dark:bg-red-900 dark:text-red-400 hover:scale-110" title="Presión Arterial">
+                                <i class="fa-solid fa-heart"></i>
+                            </button>
+                        </div>
+                    @else
+                        <div></div>
+                    @endif
+                </div>
+
+                {{-- Botón Cerrar --}}
                 <button x-on:click="$dispatch('close-modal', 'day-details')" class="px-4 py-2 text-sm font-medium text-gray-800 transition bg-gray-200 rounded hover:bg-gray-300">
                     Cerrar
                 </button>

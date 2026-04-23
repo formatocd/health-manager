@@ -23,7 +23,17 @@ class ActivityLog extends Component
     public $uploads = [];
     public $existingAttachments = [];
 
-    protected $listeners = ['edit-activity-item' => 'editActivity'];
+    protected $listeners = [
+        'edit-activity-item' => 'editActivity',
+        'create-activity-for-date' => 'createActivityForDate'
+    ];
+
+    public function createActivityForDate($date)
+    {
+        $this->reset(['title', 'duration_minutes', 'description', 'files', 'uploads', 'activityId', 'existingAttachments']);
+        $this->date = Carbon::parse($date)->format('Y-m-d') . 'T' . Carbon::now()->format('H:i');
+        $this->dispatch('open-modal', 'log-activity');
+    }
 
     public function mount()
     {
