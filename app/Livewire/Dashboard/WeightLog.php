@@ -13,7 +13,17 @@ class WeightLog extends Component
     public $date;
     public $description;
 
-    protected $listeners = ['edit-weight-item' => 'editWeight'];
+    protected $listeners = [
+        'edit-weight-item' => 'editWeight',
+        'create-weight-for-date' => 'createWeightForDate'
+    ];
+
+    public function createWeightForDate($date)
+    {
+        $this->reset(['weight', 'weightId']);
+        $this->date = Carbon::parse($date)->format('Y-m-d') . 'T' . Carbon::now()->format('H:i');
+        $this->dispatch('open-modal', 'log-weight');
+    }
 
     public function mount()
     {

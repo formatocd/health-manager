@@ -15,7 +15,17 @@ class HeartLog extends Component
     public $bpm;
     public $date;
 
-    protected $listeners = ['edit-heart-item' => 'editHeart'];
+    protected $listeners = [
+        'edit-heart-item' => 'editHeart',
+        'create-heart-for-date' => 'createHeartForDate'
+    ];
+
+    public function createHeartForDate($date)
+    {
+        $this->reset(['systolic', 'diastolic', 'bpm', 'heartId']);
+        $this->date = Carbon::parse($date)->format('Y-m-d') . 'T' . Carbon::now()->format('H:i');
+        $this->dispatch('open-modal', 'log-heart');
+    }
 
     public function mount()
     {

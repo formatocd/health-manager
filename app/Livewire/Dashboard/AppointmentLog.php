@@ -22,7 +22,17 @@ class AppointmentLog extends Component
     public $uploads = [];
     public $existingAttachments = [];
 
-    protected $listeners = ['edit-appointment' => 'loadAppointment'];
+    protected $listeners = [
+        'edit-appointment' => 'loadAppointment',
+        'create-appointment-for-date' => 'createAppointmentForDate'
+    ];
+
+    public function createAppointmentForDate($date)
+    {
+        $this->reset(['title', 'description', 'files', 'uploads', 'appointmentId', 'existingAttachments']);
+        $this->date = Carbon::parse($date)->format('Y-m-d') . 'T' . Carbon::now()->format('H:i');
+        $this->dispatch('open-modal', 'log-appointment');
+    }
 
     public function mount()
     {
