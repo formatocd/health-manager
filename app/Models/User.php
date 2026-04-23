@@ -20,9 +20,17 @@ class User extends Authenticatable
         'name',
         'email',
         'username',
+        'avatar',
         'password',
         'role',
     ];
+
+    public function getAvatarUrlAttribute()
+    {
+        return $this->avatar
+            ? asset($this->avatar)
+            : null;
+    }
 
 
     /**

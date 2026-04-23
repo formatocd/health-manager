@@ -14,11 +14,24 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         <!-- Scripts -->
         <script>
-            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
+            function applyTheme() {
+                if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
             }
+            applyTheme();
+            document.addEventListener('livewire:navigated', applyTheme);
+            
+            new MutationObserver(() => {
+                let isDarkMode = localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (isDarkMode && !document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.add('dark');
+                } else if (!isDarkMode && document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                }
+            }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
         </script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
