@@ -167,6 +167,9 @@
             </div>
 
             {{-- CONTENIDO --}}
+            @php
+                $isReadOnly = session('viewing_user_id') && session('viewing_user_id') != auth()->id();
+            @endphp
             @if($selectedDate)
                 <div class="space-y-6">
                     @if(collect($dayDetails)->flatten()->isEmpty())
@@ -183,9 +186,16 @@
                                 </h3>
                                 <div class="p-2 space-y-1 rounded bg-red-50 dark:bg-red-900/20">
                                     @foreach($dayDetails['hearts'] as $h)
-                                        <div class="flex justify-between text-sm text-gray-700 dark:text-gray-300">
-                                            <span>{{ $h->date->format('H:i') }}</span>
-                                            <span class="font-bold">{{ $h->systolic }}/{{ $h->diastolic }} <span class="text-xs font-normal">mmHg</span></span>
+                                        <div class="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300">
+                                            <div>
+                                                <span class="mr-2">{{ $h->date->format('H:i') }}</span>
+                                                <span class="font-bold">{{ $h->systolic }}/{{ $h->diastolic }} <span class="text-xs font-normal">mmHg</span></span>
+                                            </div>
+                                            @if(!$isReadOnly)
+                                                <button x-on:click="$dispatch('close-modal', 'day-details')" wire:click.stop="$dispatch('edit-heart-item', { id: {{ $h->id }} })" class="text-gray-400 transition hover:text-blue-600" title="Editar">
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </button>
+                                            @endif
                                         </div>
                                     @endforeach
                                 </div>
@@ -200,9 +210,16 @@
                                 </h3>
                                 <div class="p-2 text-sm text-gray-700 rounded bg-blue-50 dark:bg-blue-900/20 dark:text-gray-300">
                                     @foreach($dayDetails['weights'] as $w)
-                                        <div class="flex justify-between">
-                                            <span>{{ $w->date->format('H:i') }}</span>
-                                            <span class="font-bold">{{ $w->weight }} kg</span>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <span class="mr-2">{{ $w->date->format('H:i') }}</span>
+                                                <span class="font-bold">{{ $w->weight }} kg</span>
+                                            </div>
+                                            @if(!$isReadOnly)
+                                                <button x-on:click="$dispatch('close-modal', 'day-details')" wire:click.stop="$dispatch('edit-weight-item', { id: {{ $w->id }} })" class="text-gray-400 transition hover:text-blue-600" title="Editar">
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </button>
+                                            @endif
                                         </div>
                                     @endforeach
                                 </div>
@@ -218,9 +235,16 @@
                                 <div class="space-y-2">
                                     @foreach($dayDetails['exercises'] as $e)
                                         <div class="p-3 text-sm text-gray-700 rounded bg-orange-50 dark:bg-orange-900/20 dark:text-gray-300">
-                                            <div class="flex justify-between mb-1 font-semibold">
-                                                <span>{{ $e->title }}</span>
-                                                <span>{{ $e->duration_minutes }} min</span>
+                                            <div class="flex items-start justify-between mb-1">
+                                                <div class="font-semibold">
+                                                    <span>{{ $e->title }}</span>
+                                                    <span class="ml-1 text-xs font-normal text-gray-500 dark:text-gray-400">({{ $e->duration_minutes }} min)</span>
+                                                </div>
+                                                @if(!$isReadOnly)
+                                                    <button x-on:click="$dispatch('close-modal', 'day-details')" wire:click.stop="$dispatch('edit-activity-item', { id: {{ $e->id }} })" class="text-gray-400 transition hover:text-blue-600" title="Editar">
+                                                        <i class="fa-solid fa-pen"></i>
+                                                    </button>
+                                                @endif
                                             </div>
                                             @if($e->description)
                                                 <div class="mb-2 toastui-editor-contents" style="background: transparent;">{!! $e->description !!}</div>
@@ -257,9 +281,16 @@
                                 <div class="space-y-2">
                                     @foreach($dayDetails['appointments'] as $a)
                                         <div class="p-3 text-sm text-gray-700 rounded bg-green-50 dark:bg-green-900/20 dark:text-gray-300">
-                                            <div class="flex justify-between mb-1 font-semibold">
-                                                <span>{{ $a->title }}</span>
-                                                <span>{{ $a->date->format('H:i') }}</span>
+                                            <div class="flex items-start justify-between mb-1">
+                                                <div class="font-semibold">
+                                                    <span>{{ $a->title }}</span>
+                                                    <span class="ml-1 text-xs font-normal text-gray-500 dark:text-gray-400">{{ $a->date->format('H:i') }}</span>
+                                                </div>
+                                                @if(!$isReadOnly)
+                                                    <button x-on:click="$dispatch('close-modal', 'day-details')" wire:click.stop="$dispatch('edit-appointment', { id: {{ $a->id }} })" class="text-gray-400 transition hover:text-blue-600" title="Editar">
+                                                        <i class="fa-solid fa-pen"></i>
+                                                    </button>
+                                                @endif
                                             </div>
                                             @if($a->description)
                                                 <div class="mb-2 toastui-editor-contents" style="background: transparent;">{!! $a->description !!}</div>
