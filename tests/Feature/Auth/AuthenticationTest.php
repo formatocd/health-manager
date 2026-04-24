@@ -4,6 +4,7 @@ use App\Models\User;
 use Livewire\Volt\Volt;
 
 test('login screen can be rendered', function () {
+    User::factory()->create();
     $response = $this->get('/login');
 
     $response
@@ -48,7 +49,7 @@ test('navigation menu can be rendered', function () {
 
     $this->actingAs($user);
 
-    $response = $this->get('/dashboard');
+    $response = $this->get('/');
 
     $response
         ->assertOk()

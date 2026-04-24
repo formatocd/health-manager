@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Notification;
 use Livewire\Volt\Volt;
 
 test('reset password link screen can be rendered', function () {
+    User::factory()->create();
     $response = $this->get('/forgot-password');
 
     $response

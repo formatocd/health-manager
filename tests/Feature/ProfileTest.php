@@ -24,6 +24,7 @@ test('profile information can be updated', function () {
 
     $component = Volt::test('profile.update-profile-information-form')
         ->set('name', 'Test User')
+        ->set('username', 'testuser123')
         ->set('email', 'test@example.com')
         ->call('updateProfileInformation');
 
@@ -45,6 +46,7 @@ test('email verification status is unchanged when the email address is unchanged
 
     $component = Volt::test('profile.update-profile-information-form')
         ->set('name', 'Test User')
+        ->set('username', 'testuser123')
         ->set('email', $user->email)
         ->call('updateProfileInformation');
 
