@@ -64,7 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Allows inviting users to share health data.
+- Ability to invite users to share health data.
 
 ## [1.0.0] - 2026-01-24
 
@@ -73,6 +73,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Calendar view to add health records (medical appointment, heart rate, activities, and weight).
 - History view where all health records are listed, allowing for their editing and deletion.
 - Statistics view showing the weight progress chart.
-- User profile that allows to:
+- User profile that allows you to:
   - Change username, email, and password.
   - Delete the user account.
