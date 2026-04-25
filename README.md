@@ -1,130 +1,132 @@
-
 # 🏥 Health Manager
+
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/formatocd/health-manager/blob/master/README.md)
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](https://github.com/formatocd/health-manager/blob/master/README.es.md)
 
 ![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white) ![PHP](https://img.shields.io/badge/PHP-8.4+-777BB4?style=for-the-badge&logo=php&logoColor=white) ![Livewire](https://img.shields.io/badge/Livewire-3.x-4E56A6?style=for-the-badge&logo=livewire&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-**Health Manager** es una plataforma que permite a los usuarios llevar un registro de citas, control de peso y expedientes médicos, con la capacidad de compartir estos datos de forma segura con otros usuarios (familiares, médicos o cuidadores).
+**Health Manager** is a platform that allows users to keep track of appointments, weight control, and medical records, with the ability to safely share this data with other users (family members, doctors, or caregivers).
 
-## ✨ Características Principales
+## ✨ Main Features
 
-* **📅 Calendario Interactivo:** Gestión visual de citas médicas y eventos de salud.
-* **⚖️ Control de Salud:** Registro y gráficas de evolución de peso.
-* **📂 Historial Médico:** Almacenamiento digital de informes y documentos.
-* **🤝 Compartición de Datos:** Sistema para compartir datos con otros usuarios (modo "Solo Lectura").
-* **👥 Roles y Usuarios:** Panel de administración para gestión de usuarios.
-* **🚀 Auto-Instalable:** Sistema de despliegue "Zero-Touch".
+* **📅 Interactive Calendar:** Visual management of medical appointments and health events.
+* **⚖️ Health Tracking:** Weight logging and evolution charts.
+* **📂 Medical History:** Digital storage for reports and documents.
+* **🤝 Data Sharing:** System to share data with other users ("Read-Only" mode).
+* **👥 Roles and Users:** Admin panel for user management.
+* **🚀 Self-Installable:** "Zero-Touch" deployment system.
 
-## 🛠️ Requisitos del Sistema
+## 🛠️ System Requirements
 
-* PHP 8.4 o superior.
-* Extensiones PHP requeridas por Laravel (Ctype, cURL, DOM, Fileinfo, Filter, Hash, Mbstring, OpenSSL, PCRE, PDO, Session, Tokenizer, XML).
-* [Base de datos compatible con Laravel](https://laravel.com/docs/12.x/database) (MySQL, MariaDB, PostgreSQL, SQLite, etc).
+* PHP 8.4 or higher.
+* PHP extensions required by Laravel (Ctype, cURL, DOM, Fileinfo, Filter, Hash, Mbstring, OpenSSL, PCRE, PDO, Session, Tokenizer, XML).
+* [Laravel compatible database](https://laravel.com/docs/12.x/database) (MySQL, MariaDB, PostgreSQL, SQLite, etc).
 
-## 📦 Instalación
+## 📦 Installation
 
-Para cualquiera de los dos métodos de instalación, es necesario disponer de las siguientes herramientas:
+For either of the two installation methods, the following tools are required:
 * **Git**
 * **Composer**
 * **NPM** (Node.js)
 
-Elige el método que se adapte a tu entorno:
+Choose the method that fits your environment:
 
-### 🅰️ Opción A: Hosting con Consola (VPS / SSH)
-Estas operaciones se realizan directamente conectado a la consola de tu servidor.
+### 🅰️ Option A: Console Hosting (VPS / SSH)
+These operations are performed directly connected to your server's console.
 
-1.  **Clonar el repositorio:**
+1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/formatocd/health-manager.git](https://github.com/formatocd/health-manager.git)
+    git clone https://github.com/formatocd/health-manager.git
     cd health-manager
     ```
 
-2.  **Instalar dependencias y construir assets:**
+2.  **Install dependencies and build assets:**
     ```bash
     composer install --no-dev --optimize-autoloader
     npm install && npm run build
     ```
 
-3.  **Configuración inicial:**
+3.  **Initial setup:**
     ```bash
     cp .env.example .env
     php artisan key:generate
     ```
-    *Nota: No es necesario ejecutar migraciones; el sistema las lanzará automáticamente al entrar en la web.*
+    *Note: There is no need to run migrations; the system will automatically run them upon accessing the web.*
 
-### 🅱️ Opción B: Preparación en Local para Hosting Compartido (Sin Consola / FTP)
-Estas operaciones se realizan en tu ordenador personal antes de subir los archivos.
+### 🅱️ Option B: Local Preparation for Shared Hosting (No Console / FTP)
+These operations are performed on your personal computer before uploading the files.
 
-1.  **Clonar el repositorio en tu equipo:**
+1.  **Clone the repository on your machine:**
     ```bash
-    git clone [https://github.com/formatocd/health-manager.git](https://github.com/formatocd/health-manager.git)
+    git clone https://github.com/formatocd/health-manager.git
     cd health-manager
     ```
 
-2.  **Instalar dependencias y construir assets:**
+2.  **Install dependencies and build assets:**
     ```bash
     composer install --no-dev --optimize-autoloader
     npm install && npm run build
     ```
 
-3.  **Configuración inicial:**
+3.  **Initial setup:**
     ```bash
     cp .env.example .env
     php artisan key:generate
     ```
 
-4.  **Subida de ficheros:**
-    Sube **todos** los archivos y carpetas del proyecto (incluyendo `vendor` y `public/build`) a tu hosting mediante FTP o Gestor de Archivos.
+4.  **File upload:**
+    Upload **all** project files and folders (including `vendor` and `public/build`) to your hosting via FTP or File Manager.
 
-## ⚙️ Configuración del Entorno
+## ⚙️ Environment Configuration
 
-Una vez tengas los archivos en el servidor (ya sea por Opción A o B), debes configurar el archivo **`.env`** y el servidor web.
+Once you have the files on the server (whether via Option A or B), you must configure the **`.env`** file and the web server.
 
-### 1. Editar el archivo `.env`
-Asegúrate de configurar las siguientes variables con los datos de tu hosting:
+### 1. Edit the `.env` file
+Make sure to configure the following variables with your hosting data:
 
-* **Aplicación (Producción):**
+* **Application (Production):**
     ```env
     APP_ENV=production
     APP_DEBUG=false
-    APP_URL=https://tudominio.com
+    APP_URL=https://yourdomain.com
     ```
-* **Base de Datos:**
+* **Database:**
     ```env
     DB_CONNECTION=mysql
-    DB_HOST=host.de.tu.bd
+    DB_HOST=your.db.host
     DB_PORT=3306
-    DB_DATABASE=nombre_de_tu_bd
-    DB_USERNAME=tu_usuario
-    DB_PASSWORD=tu_contraseña
+    DB_DATABASE=your_db_name
+    DB_USERNAME=your_username
+    DB_PASSWORD=your_password
     ```
-* **Servidor de Correo (SMTP):**
-    Necesario para el envío de notificaciones y recuperación de contraseñas.
+* **Mail Server (SMTP):**
+    Required for sending notifications and password recovery.
     ```env
     MAIL_MAILER=smtp
-    MAIL_HOST=smtp.tuservidor.com
+    MAIL_HOST=smtp.yourserver.com
     MAIL_PORT=587
-    MAIL_USERNAME=tu_email@tudominio.com
-    MAIL_PASSWORD=tu_contraseña_email
+    MAIL_USERNAME=your_email@yourdomain.com
+    MAIL_PASSWORD=your_email_password
     MAIL_ENCRYPTION=tls
-    MAIL_FROM_ADDRESS="no-reply@tudominio.com"
+    MAIL_FROM_ADDRESS="no-reply@yourdomain.com"
     MAIL_FROM_NAME="${APP_NAME}"
     ```
 
-### 2. Configurar Carpeta Pública
-⚠️ **Importante:** Debes configurar tu servidor web o hosting para que el dominio apunte a la carpeta **/public** del proyecto, no a la raíz.
+### 2. Configure Public Folder
+⚠️ **Important:** You must configure your web server or hosting so that the domain points to the **/public** folder of the project, not the root.
 
-## 📖 Instrucciones de Uso
+## 📖 Usage Instructions
 
-### 1. Primer Acceso (Creación del Administrador)
-El sistema cuenta con una política de **"First User Takeover"**:
-* Al entrar a la web por primera vez, el sistema detectará la base de datos vacía y **creará las tablas automáticamente**.
-* Te redirigirá al registro obligatoriamente.
-* **El primer usuario registrado** será el **ADMINISTRADOR** de la aplicación.
+### 1. First Access (Administrator Creation)
+The system features a **"First User Takeover"** policy:
+* When accessing the web for the first time, the system will detect the empty database and **automatically create the tables**.
+* It will force-redirect you to registration.
+* **The first registered user** will become the **ADMINISTRATOR** of the application.
 
-### 2. Gestión Diaria
-* **Calendario:** Haz clic en cualquier día para ver los detalles de los registros que contenga. Para añadir un registro pulsa en el botón `+` de la esquina inferior derecha y selecciona el tipo de registro.
-* **Perfil y Nick:** Configura tu `username` (Nick) en tu perfil para que otros te encuentren.
-* **Compartir Datos:** Ve a `Perfil` -> `Compartir Datos` e introduce el Nick de un usuario existente para darle acceso de lectura.
+### 2. Daily Management
+* **Calendar:** Click on any day to view the details of its records. To add a record, click the `+` button in the bottom right corner and select the record type.
+* **Profile and Nick:** Set up your `username` (Nick) in your profile so others can find you.
+* **Share Data:** Go to `Profile` -> `Share Data` and enter the Nick of an existing user to grant them read access.
 
-## 📄 Licencia
-Este proyecto es de código abierto bajo la licencia [MIT](https://opensource.org/licenses/MIT).
+## 📄 License
+This project is open-sourced software licensed under the [MIT](https://opensource.org/licenses/MIT) license.
