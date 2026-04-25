@@ -8,11 +8,10 @@
         <title>{{ config('app.name', 'Laravel') }}</title>
         <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/svg+xml">
 
-        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <!-- Scripts -->
+        
         <script>
             function applyTheme() {
                 if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -34,18 +33,16 @@
             }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
         </script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <!-- ToastUI Editor -->
         <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
         <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/theme/toastui-editor-dark.min.css" />
         <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-        
+
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             <livewire:layout.navigation />
 
-            <!-- Page Heading -->
             @if (isset($header))
                 <header class="bg-white shadow dark:bg-gray-800">
                     <div class="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -54,10 +51,15 @@
                 </header>
             @endif
 
-            <!-- Page Content -->
             <main>
                 {{ $slot }}
             </main>
+
+            @if (config('app.version'))
+                <footer class="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                    {{ config('app.name') }} v{{ config('app.version') }}
+                </footer>
+            @endif
         </div>
     </body>
 </html>
