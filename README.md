@@ -1,7 +1,7 @@
 # 🏥 Health Manager
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/formatocd/health-manager/blob/master/README.md)
-[![es](https://img.shields.io/badge/lang-es-yellow.svg)](https://github.com/formatocd/health-manager/blob/master/README.es.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/formatocd/health-manager/blob/main/README.md)
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](https://github.com/formatocd/health-manager/blob/main/README.es.md)
 
 ![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white) ![PHP](https://img.shields.io/badge/PHP-8.4+-777BB4?style=for-the-badge&logo=php&logoColor=white) ![Livewire](https://img.shields.io/badge/Livewire-3.x-4E56A6?style=for-the-badge&logo=livewire&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
