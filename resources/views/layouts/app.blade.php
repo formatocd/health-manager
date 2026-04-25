@@ -38,6 +38,9 @@
         <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @livewireStyles
+        @livewireScriptConfig
+        <script src="{{ asset('vendor/livewire/livewire.js') }}"></script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
