@@ -5,7 +5,7 @@
 
 ![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white) ![PHP](https://img.shields.io/badge/PHP-8.4+-777BB4?style=for-the-badge&logo=php&logoColor=white) ![Livewire](https://img.shields.io/badge/Livewire-3.x-4E56A6?style=for-the-badge&logo=livewire&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-**Health Manager** es una plataforma que permite a los usuarios llevar un registro de citas, control de peso y expedientes médicos, con la capacidad de compartir estos datos de forma segura con otros usuarios (familiares, médicos o cuidadores).
+**Health Manager** es una plataforma que permite a los usuarios llevar un registro de citas médicas, control de peso, actividades deportivas y tensión, con la capacidad de compartir estos datos de forma segura con otros usuarios (familiares, médicos o cuidadores).
 
 ## ✨ Características Principales
 
@@ -13,14 +13,19 @@
 * **⚖️ Control de Salud:** Registro y gráficas de evolución de peso.
 * **📂 Historial Médico:** Almacenamiento digital de informes y documentos.
 * **🤝 Compartición de Datos:** Sistema para compartir datos con otros usuarios (modo "Solo Lectura").
-* **👥 Roles y Usuarios:** Panel de administración para gestión de usuarios.
 * **🚀 Auto-Instalable:** Sistema de despliegue "Zero-Touch".
 
 ## 🛠️ Requisitos del Sistema
 
 * PHP 8.4 o superior.
 * Extensiones PHP requeridas por Laravel (Ctype, cURL, DOM, Fileinfo, Filter, Hash, Mbstring, OpenSSL, PCRE, PDO, Session, Tokenizer, XML).
-* [Base de datos compatible con Laravel](https://laravel.com/docs/12.x/database) (MySQL, MariaDB, PostgreSQL, SQLite, etc).
+* [Base de datos compatible con Laravel](https://laravel.com/docs/13.x/database) (MySQL, MariaDB, PostgreSQL, SQLite, etc).
+
+## 🐳 Imagen Docker
+
+Si prefieres no instalar el proyecto manualmente, disponemos de una imagen Docker oficial lista para usar. Puedes encontrar toda la documentación sobre su configuración y uso en nuestro repositorio de Docker Hub:
+
+👉 [formatocd/health-manager en Docker Hub](https://hub.docker.com/repository/docker/formatocd/health-manager/general)
 
 ## 📦 Instalación
 
@@ -92,7 +97,7 @@ Asegúrate de configurar las siguientes variables con los datos de tu hosting:
     ```
 * **Base de Datos:**
     ```env
-    DB_CONNECTION=mysql
+    DB_CONNECTION=mariadb
     DB_HOST=host.de.tu.bd
     DB_PORT=3306
     DB_DATABASE=nombre_de_tu_bd
