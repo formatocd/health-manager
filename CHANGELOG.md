@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update Laravel version from 12.x to 13.x.
 
+### Security
+
+- ToastUI XSS vulnerability.
+
 ## [1.3.0] - 2026-04-23
 
 ### Added
