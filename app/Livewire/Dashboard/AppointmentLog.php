@@ -93,14 +93,14 @@ class AppointmentLog extends Component
             $appointment->update([
                 'title' => $this->title,
                 'date' => $this->date,
-                'description' => $this->description,
+                'description' => clean($this->description),
             ]);
         } else {
             $appointment = MedicalAppointment::create([
                 'user_id' => auth()->id(),
                 'title' => $this->title,
                 'date' => $this->date,
-                'description' => $this->description,
+                'description' => clean($this->description),
             ]);
         }
 

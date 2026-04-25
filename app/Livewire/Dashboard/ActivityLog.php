@@ -101,7 +101,7 @@ class ActivityLog extends Component
                     'title' => $this->title,
                     'duration_minutes' => $this->duration_minutes,
                     'date' => $this->date,
-                    'description' => $this->description,
+                    'description' => clean($this->description),
                 ]);
             }
         } else {
@@ -110,7 +110,7 @@ class ActivityLog extends Component
                 'title' => $this->title,
                 'duration_minutes' => $this->duration_minutes,
                 'date' => $this->date,
-                'description' => $this->description,
+                'description' => clean($this->description),
             ]);
         }
 
