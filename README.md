@@ -5,7 +5,7 @@
 
 ![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white) ![PHP](https://img.shields.io/badge/PHP-8.4+-777BB4?style=for-the-badge&logo=php&logoColor=white) ![Livewire](https://img.shields.io/badge/Livewire-3.x-4E56A6?style=for-the-badge&logo=livewire&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-**Health Manager** is a platform that allows users to keep track of appointments, weight control, and medical records, with the ability to safely share this data with other users (family members, doctors, or caregivers).
+**Health Manager** is a platform that allows users to keep track of medical appointments, weight control, sports activities, and blood pressure, with the ability to safely share this data with other users (family members, doctors, or caregivers).
 
 ## ✨ Main Features
 
@@ -13,14 +13,19 @@
 * **⚖️ Health Tracking:** Weight logging and evolution charts.
 * **📂 Medical History:** Digital storage for reports and documents.
 * **🤝 Data Sharing:** System to share data with other users ("Read-Only" mode).
-* **👥 Roles and Users:** Admin panel for user management.
 * **🚀 Self-Installable:** "Zero-Touch" deployment system.
 
 ## 🛠️ System Requirements
 
 * PHP 8.4 or higher.
 * PHP extensions required by Laravel (Ctype, cURL, DOM, Fileinfo, Filter, Hash, Mbstring, OpenSSL, PCRE, PDO, Session, Tokenizer, XML).
-* [Laravel compatible database](https://laravel.com/docs/12.x/database) (MySQL, MariaDB, PostgreSQL, SQLite, etc).
+* [Laravel compatible database](https://laravel.com/docs/13.x/database) (MySQL, MariaDB, PostgreSQL, SQLite, etc).
+
+## 🐳 Docker Image
+
+If you prefer not to install the project manually, we have an official Docker image ready to use. You can find all the documentation regarding its configuration and usage on our Docker Hub repository:
+
+👉 [formatocd/health-manager on Docker Hub](https://hub.docker.com/repository/docker/formatocd/health-manager/general)
 
 ## 📦 Installation
 
@@ -92,7 +97,7 @@ Make sure to configure the following variables with your hosting data:
     ```
 * **Database:**
     ```env
-    DB_CONNECTION=mysql
+    DB_CONNECTION=mariadb
     DB_HOST=your.db.host
     DB_PORT=3306
     DB_DATABASE=your_db_name
